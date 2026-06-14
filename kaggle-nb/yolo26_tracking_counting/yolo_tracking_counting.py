@@ -115,7 +115,6 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_
         overlay = annotated_frame.copy()
         cv2.rectangle(overlay, (20, 20), (450, 240), (0, 0, 0), -1)
         alpha = 0.7
-        cv2.addWeighted(overlay, overlay, alpha, 0, 0) # Wait, correctly addWeighted below
         annotated_frame = cv2.addWeighted(overlay, alpha, annotated_frame, 1 - alpha, 0)
         
         font = cv2.FONT_HERSHEY_SIMPLEX
