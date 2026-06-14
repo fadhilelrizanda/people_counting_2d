@@ -6,7 +6,7 @@
   "kernel_type": "script",
   "is_private": "true",
   "enable_gpu": "true",
-  "accelerator": "NvidiaTeslaT4",
+  "accelerator": "T4x2",
   "enable_tpu": "false",
   "enable_internet": "true",
   "dataset_sources": ["almightyj/oxford-town-centre"],
