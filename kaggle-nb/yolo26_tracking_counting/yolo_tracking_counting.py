@@ -48,12 +48,12 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_
     frame_count = 0
     prev_time = time.time()
     
-    # Define counting region (a rectangle box in the middle)
+    # Define counting region (based on code/region/region_data.json)
     region_pts = np.array([
-        [int(width * 0.3), int(height * 0.4)],
-        [int(width * 0.7), int(height * 0.4)],
-        [int(width * 0.7), int(height * 0.6)],
-        [int(width * 0.3), int(height * 0.6)]
+        [283, 411],
+        [796, 178],
+        [1863, 469],
+        [1747, 864]
     ], np.int32)
     region_pts = region_pts.reshape((-1, 1, 2))
     

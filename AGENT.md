@@ -33,7 +33,7 @@ This repository is organized into distinct subdirectories, each containing its o
 * **`helper/`** ([README.md](file:///home/fadhil/program/people_counting_2d/helper/README.md)): Contains utility scripts for development workflows, such as downloading Kaggle kernel outputs.
 
 > [!WARNING]
-> **Missing Files**: Please note that since the root environment was reset, the main `README.md` file and other legacy `.md` files in the root directory were deleted. Additionally, some files previously referenced in documentation (like `kaggle-mcp/CLAUDE.md`, `kaggle_notebooks/dataset_visualizer/` scripts, or `kaggle-mcp/dummy-kernel/` template files) may be missing and need to be recreated.
+> **Missing Files**: Please note that since the root environment was reset, the main `README.md` file and other legacy `.md` files in the root directory were deleted. Additionally, some files previously referenced in documentation (like `kaggle-mcp/CLAUDE.md`, `kaggle-nb/dataset_visualizer/` scripts, or `kaggle-mcp/dummy-kernel/` template files) may be missing and need to be recreated.
 
 ---
 
@@ -129,8 +129,9 @@ This project relies exclusively on the **Oxford Town Centre** dataset as its pri
 ## 8. Development & Execution Rules
 
 To maintain consistency and proper workflow throughout the project, adhere to the following rules:
-1. **Execution Environment**: Code must be run in `kaggle-mcp` using a Kaggle Kernel for remote execution.
+1. **Execution Environment**: Kaggle kernels should be executed remotely using the tools provided by the `kaggle-mcp` server, while the code resides in `kaggle-nb`.
 2. **Primary Kaggle Profile**: All operations using the Kaggle API and MCP server must default to the `fadhilelrizandamicr` profile.
 3. **Commit First Workflow**: Any updated or newly developed code must be pushed to the Git repository first before it is executed or tested in the remote Kaggle kernel.
 4. **Hardware Configuration**: All remote Kaggle kernels must be configured to run on the **T4x2 GPU**. Since the Kaggle API and `kernel-metadata.json` default to P100 (which crashes with modern PyTorch due to dropped `sm_60` support), you **must** use the CLI flag `--accelerator NvidiaTeslaT4` when pushing the kernel (e.g. `kaggle kernels push -p folder --accelerator NvidiaTeslaT4`).
 5. **GitHub Operations**: Use the GitHub MCP server for all Git and GitHub interactions (e.g., pushing code, managing branches, or creating pull requests).
+6. **Kaggle Tasks Directory**: If new task code for kaggle running, it should be making new sub dir inside `kaggle-nb`.
