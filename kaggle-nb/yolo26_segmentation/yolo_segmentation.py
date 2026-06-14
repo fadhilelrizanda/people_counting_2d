@@ -12,8 +12,15 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_dura
     
     if torch.cuda.is_available():
         device_name = torch.cuda.get_device_name(0)
+        if "P100" in device_name:
+            print("Warning: P100 GPU detected. PyTorch 2.x dropped support for P100. Falling back to CPU.")
+            device_to_use = 'cpu'
+            device_name = "P100 (Fallback: CPU)"
+        else:
+            device_to_use = 'cuda:0'
     else:
         device_name = "CPU"
+        device_to_use = 'cpu'
 
     cap = cv2.VideoCapture(input_path)
     if not cap.isOpened():
@@ -39,7 +46,7 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_dura
             break
 
         # predict only class 0 (person)
-        results = model.predict(frame, conf=0.25, classes=[0], verbose=False)
+        results = model.predict(frame, conf=0.25, classes=[0], verbose=False, device=device_to_use)
         annotated_frame = results[0].plot()
         
         curr_time = time.time()
