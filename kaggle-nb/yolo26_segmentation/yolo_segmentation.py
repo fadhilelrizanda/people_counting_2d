@@ -2,11 +2,18 @@ import os
 os.system("pip install ultralytics")
 
 import cv2
+import time
+import torch
 from ultralytics import YOLO
 
 def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_duration_sec=60):
     print(f"Loading model: {model_name}...")
     model = YOLO(model_name)
+    
+    if torch.cuda.is_available():
+        device_name = torch.cuda.get_device_name(0)
+    else:
+        device_name = "CPU"
 
     cap = cv2.VideoCapture(input_path)
     if not cap.isOpened():
@@ -24,13 +31,38 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_dura
     print(f"Processing video at {fps} FPS. Stopping after {max_duration_sec} seconds ({max_frames} frames).")
 
     frame_count = 0
+    prev_time = time.time()
+    
     while cap.isOpened() and frame_count < max_frames:
         success, frame = cap.read()
         if not success:
             break
 
-        results = model.predict(frame, conf=0.25, verbose=False)
+        # predict only class 0 (person)
+        results = model.predict(frame, conf=0.25, classes=[0], verbose=False)
         annotated_frame = results[0].plot()
+        
+        curr_time = time.time()
+        inference_fps = 1 / (curr_time - prev_time + 1e-6)
+        prev_time = curr_time
+        
+        # Professional overlay
+        overlay = annotated_frame.copy()
+        cv2.rectangle(overlay, (20, 20), (450, 200), (0, 0, 0), -1)
+        alpha = 0.7
+        annotated_frame = cv2.addWeighted(overlay, alpha, annotated_frame, 1 - alpha, 0)
+        
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(annotated_frame, "INTELLIGENT PEOPLE TRACKING", (40, 50), font, 0.7, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.line(annotated_frame, (40, 65), (430, 65), (0, 255, 255), 2)
+        
+        cv2.putText(annotated_frame, f"Model : {model_name}", (40, 95), font, 0.6, (220, 220, 220), 1, cv2.LINE_AA)
+        cv2.putText(annotated_frame, f"GPU   : {device_name}", (40, 125), font, 0.6, (220, 220, 220), 1, cv2.LINE_AA)
+        cv2.putText(annotated_frame, f"FPS   : {inference_fps:.1f}", (40, 155), font, 0.6, (0, 255, 0), 1, cv2.LINE_AA)
+        
+        people_count = len(results[0].boxes)
+        cv2.putText(annotated_frame, f"Count : {people_count}", (40, 185), font, 0.7, (0, 165, 255), 2, cv2.LINE_AA)
+
         out.write(annotated_frame)
         frame_count += 1
         
