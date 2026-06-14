@@ -1,0 +1,91 @@
+[{"stream_name":"stdout","time":3.786907565,"data":"Collecting ultralytics\n"}
+,{"stream_name":"stdout","time":3.803451924,"data":"  Downloading ultralytics-8.4.67-py3-none-any.whl.metadata (41 kB)\n"}
+,{"stream_name":"stdout","time":3.817330559,"data":"     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 41.3/41.3 kB 2.9 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":3.845632281,"data":"Requirement already satisfied: numpy\u003e=1.23.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (2.4.6)\n"}
+,{"stream_name":"stdout","time":3.847276905,"data":"Requirement already satisfied: matplotlib\u003e=3.3.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (3.10.0)\n"}
+,{"stream_name":"stdout","time":3.848905578,"data":"Requirement already satisfied: opencv-python\u003e=4.6.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (4.13.0.92)\n"}
+,{"stream_name":"stdout","time":3.850495231,"data":"Requirement already satisfied: pillow\u003e=7.1.2 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (11.3.0)\n"}
+,{"stream_name":"stdout","time":3.851587724,"data":"Requirement already satisfied: pyyaml\u003e=5.3.1 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (6.0.3)\n"}
+,{"stream_name":"stdout","time":3.85307115,"data":"Requirement already satisfied: requests\u003e=2.23.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (2.32.4)\n"}
+,{"stream_name":"stdout","time":3.859450029,"data":"Requirement already satisfied: scipy\u003e=1.4.1 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (1.16.3)\n"}
+,{"stream_name":"stdout","time":3.861613396,"data":"Requirement already satisfied: torch\u003e=1.8.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (2.10.0+cu128)\n"}
+,{"stream_name":"stdout","time":3.862681498,"data":"Requirement already satisfied: torchvision\u003e=0.9.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (0.25.0+cu128)\n"}
+,{"stream_name":"stdout","time":3.8643547700000003,"data":"Requirement already satisfied: psutil\u003e=5.8.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (5.9.5)\n"}
+,{"stream_name":"stdout","time":3.866000306,"data":"Requirement already satisfied: polars\u003e=0.20.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (1.35.2)\n"}
+,{"stream_name":"stdout","time":3.867316777,"data":"Requirement already satisfied: nvidia-ml-py\u003e=12.0.0 in /usr/local/lib/python3.12/dist-packages (from ultralytics) (13.595.45)\n"}
+,{"stream_name":"stdout","time":3.90064323,"data":"Collecting ultralytics-thop\u003e=2.0.18 (from ultralytics)\n"}
+,{"stream_name":"stdout","time":3.905757646,"data":"  Downloading ultralytics_thop-2.0.20-py3-none-any.whl.metadata (14 kB)\n"}
+,{"stream_name":"stdout","time":3.923319673,"data":"Requirement already satisfied: contourpy\u003e=1.0.1 in /usr/local/lib/python3.12/dist-packages (from matplotlib\u003e=3.3.0-\u003eultralytics) (1.3.3)\n"}
+,{"stream_name":"stdout","time":3.924407262,"data":"Requirement already satisfied: cycler\u003e=0.10 in /usr/local/lib/python3.12/dist-packages (from matplotlib\u003e=3.3.0-\u003eultralytics) (0.12.1)\n"}
+,{"stream_name":"stdout","time":3.929055955,"data":"Requirement already satisfied: fonttools\u003e=4.22.0 in /usr/local/lib/python3.12/dist-packages (from matplotlib\u003e=3.3.0-\u003eultralytics) (4.62.1)\n"}
+,{"stream_name":"stdout","time":3.930407855,"data":"Requirement already satisfied: kiwisolver\u003e=1.3.1 in /usr/local/lib/python3.12/dist-packages (from matplotlib\u003e=3.3.0-\u003eultralytics) (1.5.0)\n"}
+,{"stream_name":"stdout","time":3.931948549,"data":"Requirement already satisfied: packaging\u003e=20.0 in /usr/local/lib/python3.12/dist-packages (from matplotlib\u003e=3.3.0-\u003eultralytics) (26.2)\n"}
+,{"stream_name":"stdout","time":3.933556395,"data":"Requirement already satisfied: pyparsing\u003e=2.3.1 in /usr/local/lib/python3.12/dist-packages (from matplotlib\u003e=3.3.0-\u003eultralytics) (3.3.2)\n"}
+,{"stream_name":"stdout","time":3.934812082,"data":"Requirement already satisfied: python-dateutil\u003e=2.7 in /usr/local/lib/python3.12/dist-packages (from matplotlib\u003e=3.3.0-\u003eultralytics) (2.9.0.post0)\n"}
+,{"stream_name":"stdout","time":3.946857894,"data":"Requirement already satisfied: polars-runtime-32==1.35.2 in /usr/local/lib/python3.12/dist-packages (from polars\u003e=0.20.0-\u003eultralytics) (1.35.2)\n"}
+,{"stream_name":"stdout","time":3.955767474,"data":"Requirement already satisfied: charset_normalizer\u003c4,\u003e=2 in /usr/local/lib/python3.12/dist-packages (from requests\u003e=2.23.0-\u003eultralytics) (3.4.7)\n"}
+,{"stream_name":"stdout","time":3.956949698,"data":"Requirement already satisfied: idna\u003c4,\u003e=2.5 in /usr/local/lib/python3.12/dist-packages (from requests\u003e=2.23.0-\u003eultralytics) (3.11)\n"}
+,{"stream_name":"stdout","time":3.958201646,"data":"Requirement already satisfied: urllib3\u003c3,\u003e=1.21.1 in /usr/local/lib/python3.12/dist-packages (from requests\u003e=2.23.0-\u003eultralytics) (2.5.0)\n"}
+,{"stream_name":"stdout","time":3.959286423,"data":"Requirement already satisfied: certifi\u003e=2017.4.17 in /usr/local/lib/python3.12/dist-packages (from requests\u003e=2.23.0-\u003eultralytics) (2026.2.25)\n"}
+,{"stream_name":"stdout","time":3.97592831,"data":"Requirement already satisfied: filelock in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (3.25.2)\n"}
+,{"stream_name":"stdout","time":3.976937978,"data":"Requirement already satisfied: typing-extensions\u003e=4.10.0 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (4.15.0)\n"}
+,{"stream_name":"stdout","time":3.9783218099999997,"data":"Requirement already satisfied: setuptools in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (75.2.0)\n"}
+,{"stream_name":"stdout","time":3.979983969,"data":"Requirement already satisfied: sympy\u003e=1.13.3 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (1.14.0)\n"}
+,{"stream_name":"stdout","time":3.981470539,"data":"Requirement already satisfied: networkx\u003e=2.5.1 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (3.6.1)\n"}
+,{"stream_name":"stdout","time":3.982286974,"data":"Requirement already satisfied: jinja2 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (3.1.6)\n"}
+,{"stream_name":"stdout","time":3.9841564849999997,"data":"Requirement already satisfied: fsspec\u003e=0.8.5 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (2025.3.0)\n"}
+,{"stream_name":"stdout","time":4.045432532,"data":"Collecting cuda-bindings==12.9.4 (from torch\u003e=1.8.0-\u003eultralytics)\n"}
+,{"stream_name":"stdout","time":4.049772359,"data":"  Downloading cuda_bindings-12.9.4-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (2.6 kB)\n"}
+,{"stream_name":"stdout","time":4.061949429,"data":"Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.8.93 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (12.8.93)\n"}
+,{"stream_name":"stdout","time":4.063229018,"data":"Requirement already satisfied: nvidia-cuda-runtime-cu12==12.8.90 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (12.8.90)\n"}
+,{"stream_name":"stdout","time":4.064518499,"data":"Requirement already satisfied: nvidia-cuda-cupti-cu12==12.8.90 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (12.8.90)\n"}
+,{"stream_name":"stdout","time":4.065774893,"data":"Requirement already satisfied: nvidia-cudnn-cu12==9.10.2.21 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (9.10.2.21)\n"}
+,{"stream_name":"stdout","time":4.067392815,"data":"Requirement already satisfied: nvidia-cublas-cu12==12.8.4.1 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (12.8.4.1)\n"}
+,{"stream_name":"stdout","time":4.068740044,"data":"Requirement already satisfied: nvidia-cufft-cu12==11.3.3.83 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (11.3.3.83)\n"}
+,{"stream_name":"stdout","time":4.070084212,"data":"Requirement already satisfied: nvidia-curand-cu12==10.3.9.90 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (10.3.9.90)\n"}
+,{"stream_name":"stdout","time":4.07151415,"data":"Requirement already satisfied: nvidia-cusolver-cu12==11.7.3.90 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (11.7.3.90)\n"}
+,{"stream_name":"stdout","time":4.072716228,"data":"Requirement already satisfied: nvidia-cusparse-cu12==12.5.8.93 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (12.5.8.93)\n"}
+,{"stream_name":"stdout","time":4.074176658,"data":"Requirement already satisfied: nvidia-cusparselt-cu12==0.7.1 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (0.7.1)\n"}
+,{"stream_name":"stdout","time":4.075577921,"data":"Requirement already satisfied: nvidia-nccl-cu12==2.27.5 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (2.27.5)\n"}
+,{"stream_name":"stdout","time":4.076937736,"data":"Requirement already satisfied: nvidia-nvshmem-cu12==3.4.5 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (3.4.5)\n"}
+,{"stream_name":"stdout","time":4.078209917,"data":"Requirement already satisfied: nvidia-nvtx-cu12==12.8.90 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (12.8.90)\n"}
+,{"stream_name":"stdout","time":4.079485161,"data":"Requirement already satisfied: nvidia-nvjitlink-cu12==12.8.93 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (12.8.93)\n"}
+,{"stream_name":"stdout","time":4.080799336,"data":"Requirement already satisfied: nvidia-cufile-cu12==1.13.1.3 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (1.13.1.3)\n"}
+,{"stream_name":"stdout","time":4.082094868,"data":"Requirement already satisfied: triton==3.6.0 in /usr/local/lib/python3.12/dist-packages (from torch\u003e=1.8.0-\u003eultralytics) (3.6.0)\n"}
+,{"stream_name":"stdout","time":4.086255212,"data":"Requirement already satisfied: cuda-pathfinder~=1.1 in /usr/local/lib/python3.12/dist-packages (from cuda-bindings==12.9.4-\u003etorch\u003e=1.8.0-\u003eultralytics) (1.5.4)\n"}
+,{"stream_name":"stdout","time":4.156867591,"data":"Requirement already satisfied: six\u003e=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil\u003e=2.7-\u003ematplotlib\u003e=3.3.0-\u003eultralytics) (1.17.0)\n"}
+,{"stream_name":"stdout","time":4.160061968,"data":"Requirement already satisfied: mpmath\u003c1.4,\u003e=1.1.0 in /usr/local/lib/python3.12/dist-packages (from sympy\u003e=1.13.3-\u003etorch\u003e=1.8.0-\u003eultralytics) (1.3.0)\n"}
+,{"stream_name":"stdout","time":4.167588902,"data":"Requirement already satisfied: MarkupSafe\u003e=2.0 in /usr/local/lib/python3.12/dist-packages (from jinja2-\u003etorch\u003e=1.8.0-\u003eultralytics) (3.0.3)\n"}
+,{"stream_name":"stdout","time":4.186358355,"data":"Downloading ultralytics-8.4.67-py3-none-any.whl (1.3 MB)\n"}
+,{"stream_name":"stdout","time":4.209932095,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 62.3 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":4.21385221,"data":"Downloading cuda_bindings-12.9.4-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (12.2 MB)\n"}
+,{"stream_name":"stdout","time":4.31205711,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.2/12.2 MB 117.1 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":4.316213014,"data":"Downloading ultralytics_thop-2.0.20-py3-none-any.whl (28 kB)\n"}
+,{"stream_name":"stdout","time":6.336431967,"data":"Installing collected packages: cuda-bindings, ultralytics-thop, ultralytics\n"}
+,{"stream_name":"stdout","time":6.33668024,"data":"  Attempting uninstall: cuda-bindings\n"}
+,{"stream_name":"stdout","time":6.344555465,"data":"    Found existing installation: cuda-bindings 13.2.0\n"}
+,{"stream_name":"stdout","time":6.353077233,"data":"    Uninstalling cuda-bindings-13.2.0:\n"}
+,{"stream_name":"stdout","time":6.502996899,"data":"      Successfully uninstalled cuda-bindings-13.2.0\n"}
+,{"stream_name":"stderr","time":7.596115731,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":7.596161981,"data":"dask-cuda 26.2.0 requires cuda-core==0.3.*, but you have cuda-core 1.0.1 which is incompatible.\n"}
+,{"stream_name":"stderr","time":7.596165322,"data":"dask-cuda 26.2.0 requires numba-cuda\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":7.596168563,"data":"distributed-ucxx-cu12 0.48.0 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":7.596171232,"data":"cuml-cu12 26.2.0 requires numba\u003c0.62.0,\u003e=0.60.0, but you have numba 0.65.1 which is incompatible.\n"}
+,{"stream_name":"stderr","time":7.596173736,"data":"cuml-cu12 26.2.0 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":7.596176303,"data":"ucxx-cu12 0.48.0 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":7.596178748,"data":"cudf-cu12 26.2.1 requires numba\u003c0.62.0,\u003e=0.60.0, but you have numba 0.65.1 which is incompatible.\n"}
+,{"stream_name":"stderr","time":7.596181126,"data":"cudf-cu12 26.2.1 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.2, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stdout","time":7.596316149,"data":"Successfully installed cuda-bindings-12.9.4 ultralytics-8.4.67 ultralytics-thop-2.0.20\n"}
+,{"stream_name":"stdout","time":12.8490809,"data":"Creating new Ultralytics Settings v0.0.6 file ✅ \n"}
+,{"stream_name":"stdout","time":12.849110221,"data":"View Ultralytics Settings with 'yolo settings' or at '/root/.config/Ultralytics/settings.json'\n"}
+,{"stream_name":"stdout","time":12.849116844,"data":"Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.\n"}
+,{"stream_name":"stdout","time":19.3182794,"data":"Loading model: yolo26n-seg.pt...\n"}
+,{"stream_name":"stdout","time":19.840743289,"data":"\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n-seg.pt to 'yolo26n-seg.pt': 100% ━━━━━━━━━━━━ 6.4MB 320.6MB/s 0.0s\n"}
+,{"stream_name":"stdout","time":19.966420535,"data":"Error: Could not open input video /kaggle/input/oxford-town-centre/TownCentreXVID.mp4\n"}
+,{"stream_name":"stderr","time":24.125014248,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":24.125048186,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":24.358249324,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":24.358290467,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":24.974395101,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":26.148663421,"data":"[NbConvertApp] Writing 280660 bytes to __results__.html\n"}
+]

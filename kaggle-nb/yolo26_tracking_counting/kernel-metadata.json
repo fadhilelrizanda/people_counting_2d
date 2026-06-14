@@ -1,0 +1,16 @@
+{
+  "id": "fadhilelrizandamicr/yolov26-oxford-tracking-counting",
+  "title": "yolov26-oxford-tracking-counting",
+  "code_file": "yolo_tracking_counting.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "accelerator": "T4x2",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": ["almightyj/oxford-town-centre"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

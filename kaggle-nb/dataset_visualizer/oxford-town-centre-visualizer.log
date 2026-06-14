@@ -1,0 +1,27 @@
+[{"stream_name":"stderr","time":3.058684772,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":3.058783386,"data":"  File \"/kaggle/src/script.py\", line 10, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":3.058823992,"data":"    df = pd.read_csv(annotations_path, header=None, names=[\n"}
+,{"stream_name":"stderr","time":3.058851541,"data":"         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":3.058890221,"data":"  File \"/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\", line 1026, in read_csv\n"}
+,{"stream_name":"stderr","time":3.060642782,"data":"    return _read(filepath_or_buffer, kwds)\n"}
+,{"stream_name":"stderr","time":3.060672505,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":3.060678178,"data":"  File \"/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\", line 620, in _read\n"}
+,{"stream_name":"stderr","time":3.061018887,"data":"    parser = TextFileReader(filepath_or_buffer, **kwds)\n"}
+,{"stream_name":"stderr","time":3.061172587,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":3.061197247,"data":"  File \"/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\", line 1620, in __init__\n"}
+,{"stream_name":"stderr","time":3.061655234,"data":"    self._engine = self._make_engine(f, self.engine)\n"}
+,{"stream_name":"stderr","time":3.061764194,"data":"                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":3.061775131,"data":"  File \"/usr/local/lib/python3.12/dist-packages/pandas/io/parsers/readers.py\", line 1880, in _make_engine\n"}
+,{"stream_name":"stderr","time":3.062260785,"data":"    self.handles = get_handle(\n"}
+,{"stream_name":"stderr","time":3.062276139,"data":"                   ^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":3.062313661,"data":"  File \"/usr/local/lib/python3.12/dist-packages/pandas/io/common.py\", line 873, in get_handle\n"}
+,{"stream_name":"stderr","time":3.065515185,"data":"    handle = open(\n"}
+,{"stream_name":"stderr","time":3.065530317,"data":"             ^^^^^\n"}
+,{"stream_name":"stderr","time":3.065534272,"data":"FileNotFoundError: [Errno 2] No such file or directory: '/kaggle/input/oxford-town-centre/TownCentre-groundtruth.top'\n"}
+,{"stream_name":"stderr","time":5.485317055,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":5.485359577,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":5.839877805,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":5.83990703,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":7.552703814,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":8.835080065,"data":"[NbConvertApp] Writing 283655 bytes to __results__.html\n"}
+]
