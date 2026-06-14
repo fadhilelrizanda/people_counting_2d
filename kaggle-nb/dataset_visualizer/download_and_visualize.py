@@ -3,8 +3,19 @@ import cv2
 import os
 import math
 
-annotations_path = '/kaggle/input/oxford-town-centre/TownCentre-groundtruth.top'
-video_path = '/kaggle/input/oxford-town-centre/TownCentreXVID.mp4'
+annotations_path = None
+video_path = None
+
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        if filename == 'TownCentre-groundtruth.top':
+            annotations_path = os.path.join(dirname, filename)
+        if filename == 'TownCentreXVID.mp4':
+            video_path = os.path.join(dirname, filename)
+
+if not annotations_path or not video_path:
+    raise FileNotFoundError("Could not find dataset files.")
+
 output_path = 'output_1min.mp4'
 
 df = pd.read_csv(annotations_path, header=None, names=[
