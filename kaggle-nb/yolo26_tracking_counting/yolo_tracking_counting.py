@@ -50,15 +50,18 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_
     
     # Define counting region (based on code/region/region_data.json)
     region_pts = np.array([
-        [283, 411],
-        [796, 178],
-        [1863, 469],
-        [1747, 864]
+        [238, 291],
+        [719, 103],
+        [1891, 471],
+        [1852, 918]
     ], np.int32)
     region_pts = region_pts.reshape((-1, 1, 2))
     
-    counted_ids = set()
-    total_count = 0
+    track_states = {}
+    in_count = 0
+    out_count = 0
+    track_history = {}
+    max_history = 50 # 2 seconds at 25 fps
 
     while cap.isOpened() and frame_count < max_frames:
         success, frame = cap.read()
@@ -88,15 +91,32 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_
                 cx = int((x1 + x2) / 2)
                 cy = int((y1 + y2) / 2)
                 
-                # Check if center point is inside the polygon
-                inside = cv2.pointPolygonTest(region_pts, (cx, cy), False)
-                if inside >= 0:
-                    if track_id not in counted_ids:
-                        counted_ids.add(track_id)
-                        total_count += 1
+                # Update and draw tracking history (trail)
+                if track_id not in track_history:
+                    track_history[track_id] = []
+                track_history[track_id].append((cx, cy))
+                if len(track_history[track_id]) > max_history:
+                    track_history[track_id].pop(0)
+                    
+                pts = np.array(track_history[track_id], np.int32).reshape((-1, 1, 2))
+                cv2.polylines(annotated_frame, [pts], isClosed=False, color=(255, 0, 255), thickness=2)
+                
+                # IN/OUT counting logic
+                inside_val = cv2.pointPolygonTest(region_pts, (cx, cy), False)
+                is_inside = (inside_val >= 0)
+                
+                if track_id not in track_states:
+                    track_states[track_id] = is_inside
+                else:
+                    prev_inside = track_states[track_id]
+                    if not prev_inside and is_inside:
+                        in_count += 1
+                    elif prev_inside and not is_inside:
+                        out_count += 1
+                    track_states[track_id] = is_inside
                 
                 # Draw thin custom box
-                color = (0, 255, 0) if track_id in counted_ids else prof_color
+                color = (0, 255, 0) if is_inside else prof_color
                 cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), color, 2)
                 cv2.circle(annotated_frame, (cx, cy), 4, color, -1)
                 
@@ -113,7 +133,7 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_
         
         # Professional overlay
         overlay = annotated_frame.copy()
-        cv2.rectangle(overlay, (20, 20), (450, 240), (0, 0, 0), -1)
+        cv2.rectangle(overlay, (20, 20), (450, 270), (0, 0, 0), -1)
         alpha = 0.7
         annotated_frame = cv2.addWeighted(overlay, alpha, annotated_frame, 1 - alpha, 0)
         
@@ -127,13 +147,14 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_
         
         current_people = len(results[0].boxes) if results[0].boxes is not None else 0
         cv2.putText(annotated_frame, f"Current : {current_people}", (40, 185), font, 0.7, (0, 165, 255), 2, cv2.LINE_AA)
-        cv2.putText(annotated_frame, f"Total Counted : {total_count}", (40, 215), font, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+        cv2.putText(annotated_frame, f"IN Count: {in_count}", (40, 215), font, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+        cv2.putText(annotated_frame, f"OUT Count: {out_count}", (40, 245), font, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
 
         out.write(annotated_frame)
         frame_count += 1
         
         if frame_count % fps == 0:
-            print(f"[{tracker_type}] Processed {frame_count // fps} / {max_duration_sec} seconds... Counted: {total_count}")
+            print(f"[{tracker_type}] Processed {frame_count // fps} / {max_duration_sec} seconds... IN: {in_count}, OUT: {out_count}")
 
     cap.release()
     out.release()
