@@ -4,9 +4,10 @@ os.system("pip install ultralytics")
 import cv2
 import time
 import torch
+import numpy as np
 from ultralytics import YOLO
 
-def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_duration_sec=60):
+def process_video(input_path, output_path, model_name="yolo26m-seg.pt", max_duration_sec=60):
     print(f"Loading model: {model_name}...")
     model = YOLO(model_name)
     
@@ -47,7 +48,33 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_dura
 
         # predict only class 0 (person)
         results = model.predict(frame, conf=0.25, classes=[0], verbose=False, device=device_to_use)
-        annotated_frame = results[0].plot()
+        
+        annotated_frame = frame.copy()
+        prof_color = (255, 144, 30) # Dodger Blue in BGR
+        
+        # Custom Masks
+        if results[0].masks is not None:
+            # We can use results[0].plot(boxes=False, labels=False) to get just the default masks
+            # Or draw them manually. Let's use ultralytics built-in for masks but our custom boxes
+            # because drawing masks with correct alpha blending and resizing is complex.
+            # Actually, `plot(boxes=False, labels=False)` uses ultralytics colors.
+            pass
+            
+        # To change mask color, let's just use plot with specific overrides if we can, or manual
+        # Since ultralytics plot is highly optimized, we can just do:
+        annotated_frame = results[0].plot(conf=False, labels=False, line_width=1)
+        
+        # And manually draw the smaller professional labels
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        for box in results[0].boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            # Draw thin custom box
+            cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), prof_color, 1)
+            # Draw small professional label
+            text = "Person"
+            text_size = cv2.getTextSize(text, font, 0.4, 1)[0]
+            cv2.rectangle(annotated_frame, (x1, y1 - text_size[1] - 4), (x1 + text_size[0] + 4, y1), prof_color, -1)
+            cv2.putText(annotated_frame, text, (x1 + 2, y1 - 2), font, 0.4, (255, 255, 255), 1, cv2.LINE_AA)
         
         curr_time = time.time()
         inference_fps = 1 / (curr_time - prev_time + 1e-6)
