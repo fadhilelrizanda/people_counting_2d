@@ -1,0 +1,15 @@
+{
+  "id": "fadhilelrizanda/yolo26-oxford-segmentation",
+  "title": "YOLOv26 Oxford Segmentation",
+  "code_file": "yolo_segmentation.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": ["almightyj/oxford-town-centre"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
