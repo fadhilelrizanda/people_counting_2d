@@ -92,9 +92,9 @@ python -c "from server import *; print(kaggle_profile_show())"
 For downloading and visualizing training/testing datasets remotely on Kaggle and pulling them locally, the system uses the following components:
 
 ### Directory Layout
-* **`kaggle_notebooks/dataset_visualizer/`**:
-  * **`download_and_visualize.ipynb`**: Downloads datasets, parses annotations, and renders 1-minute `.mp4` ground-truth videos.
-  * **`kernel-metadata.json`**: Attaches the pre-requisite dataset `almightyj/oxford-town-centre`.
+* **`kaggle-nb/dataset_visualizer/`**:
+  * **`download_and_visualize.py`**: Python script that dynamically locates the dataset via `os.walk('/kaggle/input')`, parses the annotations (filtering for `body_valid == 1`), and renders a 1-minute `.mp4` ground-truth video highlighting only the pedestrians' bodies.
+  * **`kernel-metadata.json`**: Configures the Kaggle kernel (P100 GPU enabled) and attaches the pre-requisite dataset `almightyj/oxford-town-centre`.
 * **`code/`**: Scripts like `create_visualizer_notebook.py`, `local_visualize_town_centre.py`, and `download_visualizer_videos.py`.
 
 ### Oxford Town Centre Annotation Mapping
