@@ -7,14 +7,14 @@ import torch
 import numpy as np
 from ultralytics import YOLO
 
-def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_type="bytetrack", max_duration_sec=60):
+def process_video(input_path, output_path, model_name="yolov8m-seg.pt", tracker_type="bytetrack", max_duration_sec=60):
     print(f"Loading model: {model_name}...")
     try:
         model = YOLO(model_name)
     except:
         # Fallback if yolo26m-seg doesn't exist
-        print(f"Could not load {model_name}, falling back to yolov8n-seg.pt")
-        model = YOLO("yolov8n-seg.pt")
+        print(f"Could not load {model_name}, falling back to yolov8m-seg.pt")
+        model = YOLO("yolov8m-seg.pt")
         
     if torch.cuda.is_available():
         device_name = torch.cuda.get_device_name(0)
@@ -72,7 +72,10 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", tracker_
         tracker_yaml = "botsort.yaml" if tracker_type == "botsort" else "bytetrack.yaml"
         results = model.track(frame, persist=True, tracker=tracker_yaml, conf=0.25, classes=[0], verbose=False, device=device_to_use)
         
-        annotated_frame = frame.copy()
+        if results[0].masks is not None:
+            annotated_frame = results[0].plot(conf=False, labels=False, boxes=False)
+        else:
+            annotated_frame = frame.copy()
         
         # Draw the counting region
         cv2.polylines(annotated_frame, [region_pts], isClosed=True, color=(0, 255, 255), thickness=2)
@@ -176,7 +179,7 @@ if __name__ == "__main__":
         INPUT_VIDEO = video_files[0]
         
         # Check if model exists locally, else rely on ultralytics download
-        model_file = "yolo26n-seg.pt" if os.path.exists("yolo26n-seg.pt") else "yolo11n-seg.pt"
+        model_file = "yolo26m-seg.pt" if os.path.exists("yolo26m-seg.pt") else "yolo11m-seg.pt"
         
         # Run BotSORT
         OUTPUT_BOTSORT = "/kaggle/working/output_botsort.mp4" if os.path.exists("/kaggle/working") else "output_botsort.mp4"
