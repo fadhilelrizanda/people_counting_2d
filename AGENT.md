@@ -127,5 +127,5 @@ To maintain consistency and proper workflow throughout the project, adhere to th
 1. **Execution Environment**: Code must be run in `kaggle-mcp` using a Kaggle Kernel for remote execution.
 2. **Primary Kaggle Profile**: All operations using the Kaggle API and MCP server must default to the `fadhilelrizandamicr` profile.
 3. **Commit First Workflow**: Any updated or newly developed code must be pushed to the Git repository first before it is executed or tested in the remote Kaggle kernel.
-4. **Hardware Configuration**: All remote Kaggle kernels must be configured to run on the **P100 GPU** (`NvidiaTeslaP100`).
+4. **Hardware Configuration**: All remote Kaggle kernels must be configured to run on the **T4x2 GPU**. (Note: Newer PyTorch versions drop support for `sm_60`, meaning they will crash with a CUDA error on the older **P100 GPU**).
 5. **GitHub Operations**: Use the GitHub MCP server for all Git and GitHub interactions (e.g., pushing code, managing branches, or creating pull requests).
