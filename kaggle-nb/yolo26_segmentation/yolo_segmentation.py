@@ -4,7 +4,7 @@ os.system("pip install ultralytics")
 import cv2
 from ultralytics import YOLO
 
-def process_video(input_path, output_path, model_name="yolov26n-seg.pt", max_duration_sec=60):
+def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_duration_sec=60):
     print(f"Loading model: {model_name}...")
     model = YOLO(model_name)
 
