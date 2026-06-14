@@ -1,6 +1,6 @@
 {
-  "id": "fadhilelrizanda/yolo26-oxford-segmentation",
-  "title": "YOLOv26 Oxford Segmentation",
+  "id": "fadhilelrizanda/yolov26-oxford-segmentation-v3",
+  "title": "yolov26-oxford-segmentation-v3",
   "code_file": "yolo_segmentation.py",
   "language": "python",
   "kernel_type": "script",

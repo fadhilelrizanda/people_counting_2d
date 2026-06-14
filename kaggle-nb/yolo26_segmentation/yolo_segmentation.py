@@ -43,6 +43,12 @@ def process_video(input_path, output_path, model_name="yolo26n-seg.pt", max_dura
     print(f"Finished! Output saved to: {output_path}")
 
 if __name__ == "__main__":
-    INPUT_VIDEO = "/kaggle/input/oxford-town-centre/TownCentreXVID.mp4"
-    OUTPUT_VIDEO = "/kaggle/working/output_masked.mp4"
-    process_video(INPUT_VIDEO, OUTPUT_VIDEO)
+    import glob
+    video_files = glob.glob("/kaggle/input/**/*.mp4", recursive=True) + glob.glob("/kaggle/input/**/*.avi", recursive=True)
+    if not video_files:
+        print("Error: No video files found in /kaggle/input!")
+    else:
+        print(f"Found videos: {video_files}")
+        INPUT_VIDEO = video_files[0]
+        OUTPUT_VIDEO = "/kaggle/working/output_masked.mp4"
+        process_video(INPUT_VIDEO, OUTPUT_VIDEO)
