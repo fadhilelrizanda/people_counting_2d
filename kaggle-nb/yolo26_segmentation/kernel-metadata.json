@@ -1,7 +1,7 @@
 {
   "id": "fadhilelrizandamicr/yolov26-oxford-segmentation",
   "title": "yolov26-oxford-segmentation",
-  "code_file": "yolo_segmentation.py",
+  "code_file": "yolo_tracking_counting.py",
   "language": "python",
   "kernel_type": "script",
   "is_private": "true",
