@@ -71,6 +71,11 @@ When running a remote Kaggle kernel, use **`kaggle_kernels_logs_tail(kernel, lin
 * It requests logs without follow (`-f`) and returns immediately.
 * **Pattern**: Set up a background timer or poll sequentially (e.g. every 60s) calling `kaggle_kernels_logs_tail` to monitor progress.
 
+### Stopping a Running Kernel
+Because the Kaggle CLI does not have a dedicated `cancel` or `stop` command, if you need to abruptly stop a running kernel from the command line, you must use the delete command:
+* **`kaggle kernels delete <kernel-id>`**
+This will delete the kernel entirely, which effectively kills the current running job.
+
 ---
 
 ## 5. Local Testing & Debugging
