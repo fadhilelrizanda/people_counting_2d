@@ -1,0 +1,18 @@
+{
+  "id": "fadhilelrizandamicr/oxford-town-centre-visualizer",
+  "title": "Oxford Town Centre Visualizer",
+  "code_file": "download_and_visualize.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "accelerator": "NvidiaTeslaP100",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "almightyj/oxford-town-centre"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
