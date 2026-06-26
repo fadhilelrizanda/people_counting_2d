@@ -435,7 +435,9 @@ def process_video(input_path, output_path, tracker_type, rank):
         )
 
         annotated_resized = cv2.resize(annotated_frame, (target_w, target_h))
-        combined = np.hstack((annotated_resized, bev_canvas))
+        combined = np.zeros((target_h, target_w + bev_w, 3), dtype=np.uint8)
+        combined[:, :target_w] = annotated_resized
+        combined[:bev_h, target_w:] = bev_canvas
         out.write(combined)
         
         frame_count += 1
