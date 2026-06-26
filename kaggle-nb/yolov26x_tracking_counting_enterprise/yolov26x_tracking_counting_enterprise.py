@@ -49,6 +49,13 @@ def select_device():
     if not torch.cuda.is_available():
         return "cpu", "CPU"
 
+    device_count = torch.cuda.device_count()
+    if device_count > 1:
+        # Enable DDP / multi-GPU by passing multiple device IDs
+        devices = ",".join(str(i) for i in range(device_count))
+        device_name = f"DDP multi-GPU ({device_count}x {torch.cuda.get_device_name(0)})"
+        return devices, device_name
+
     device_name = torch.cuda.get_device_name(0)
     if "P100" in device_name:
         print("Warning: P100 GPU detected. PyTorch 2.x dropped support for P100. Falling back to CPU.")
