@@ -1,0 +1,18 @@
+{
+  "id": "fadhilelrizandamicr/yolov26x-img0160-2min-bytetrack",
+  "title": "yolov26x-img0160-2min-bytetrack",
+  "code_file": "yolov26x_tracking_counting_enterprise.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "accelerator": "T4x2",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "fadhildev/img-0160-first-2min"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

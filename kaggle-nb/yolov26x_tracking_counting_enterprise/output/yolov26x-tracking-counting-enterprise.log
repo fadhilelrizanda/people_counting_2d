@@ -1,0 +1,166 @@
+[{"stream_name":"stdout","time":4.264459054,"data":"     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 41.3/41.3 kB 1.4 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":4.749761048,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 20.8 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":4.884529635,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.2/12.2 MB 99.9 MB/s eta 0:00:00\n"}
+,{"stream_name":"stderr","time":8.342397237,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":8.342444526,"data":"dask-cuda 26.2.0 requires cuda-core==0.3.*, but you have cuda-core 1.0.1 which is incompatible.\n"}
+,{"stream_name":"stderr","time":8.342450682,"data":"dask-cuda 26.2.0 requires numba-cuda\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":8.342455438,"data":"distributed-ucxx-cu12 0.48.0 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":8.342460205,"data":"cuml-cu12 26.2.0 requires numba\u003c0.62.0,\u003e=0.60.0, but you have numba 0.65.1 which is incompatible.\n"}
+,{"stream_name":"stderr","time":8.34246447,"data":"cuml-cu12 26.2.0 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":8.342469135,"data":"ucxx-cu12 0.48.0 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.1, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":8.342473542,"data":"cudf-cu12 26.2.1 requires numba\u003c0.62.0,\u003e=0.60.0, but you have numba 0.65.1 which is incompatible.\n"}
+,{"stream_name":"stderr","time":8.342477149,"data":"cudf-cu12 26.2.1 requires numba-cuda[cu12]\u003c0.23.0,\u003e=0.22.2, but you have numba-cuda 0.30.2 which is incompatible.\n"}
+,{"stream_name":"stdout","time":13.290800766,"data":"Creating new Ultralytics Settings v0.0.6 file ✅ \n"}
+,{"stream_name":"stdout","time":13.29082934,"data":"View Ultralytics Settings with 'yolo settings' or at '/root/.config/Ultralytics/settings.json'\n"}
+,{"stream_name":"stdout","time":13.29083323,"data":"Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.\n"}
+,{"stream_name":"stdout","time":19.639425492,"data":"Found videos: ['/kaggle/input/datasets/almightyj/oxford-town-centre/TownCentreXVID.mp4']\n"}
+,{"stream_name":"stdout","time":19.639456274,"data":"Loading detector: yolov26x.pt\n"}
+,{"stream_name":"stdout","time":20.16125876,"data":"Could not load yolov26x.pt: [Errno 2] No such file or directory: 'yolov26x.pt'\n"}
+,{"stream_name":"stdout","time":20.161285728,"data":"Loading detector: yolo26x.pt\n"}
+,{"stream_name":"stdout","time":20.836716392,"data":"\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26x.pt to 'yolo26x.pt': 12% ━╸────────── 14.5/113.2MB 144.2MB/s 0.1s\u003c0.7s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26x.pt to 'yolo26x.pt': 34% ━━━━──────── 39.6/113.2MB 251.1MB/s 0.2s\u003c0.3s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26x.pt to 'yolo26x.pt': 62% ━━━━━━━╸──── 71.2/113.2MB 313.9MB/s 0.3s\u003c0.1s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26x.pt to 'yolo26x.pt': 88% ━━━━━━━━━━╸─ 100.2/113.2MB 288.6MB/s 0.4s\u003c0.0s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26x.pt to 'yolo26x.pt': 100% ━━━━━━━━━━━━ 113.2MB 257.7MB/s 0.4s\n"}
+,{"stream_name":"stdout","time":21.56670263,"data":"Processing /kaggle/input/datasets/almightyj/oxford-town-centre/TownCentreXVID.mp4 with yolo26x.pt, botsort, Tesla T4. Stopping after 60s (1500 frames).\n"}
+,{"stream_name":"stdout","time":21.614499141,"data":"\u001b[31m\u001b[1mrequirements:\u001b[0m Ultralytics requirement ['lap\u003e=0.5.12'] not found, attempting AutoUpdate...\n"}
+,{"stream_name":"stdout","time":22.404446631,"data":"Using Python 3.12.13 environment at: /usr\n"}
+,{"stream_name":"stdout","time":22.404472055,"data":"Resolved 2 packages in 320ms\n"}
+,{"stream_name":"stdout","time":22.404477204,"data":"Downloading lap (1.7MiB)\n"}
+,{"stream_name":"stdout","time":22.404481551,"data":" Downloaded lap\n"}
+,{"stream_name":"stdout","time":22.404485688,"data":"Prepared 1 package in 89ms\n"}
+,{"stream_name":"stdout","time":22.404489691,"data":"Installed 1 package in 5ms\n"}
+,{"stream_name":"stdout","time":22.404493731,"data":" + lap==0.5.13\n"}
+,{"stream_name":"stdout","time":22.404497401,"data":"\n"}
+,{"stream_name":"stdout","time":22.404501303,"data":"\u001b[31m\u001b[1mrequirements:\u001b[0m AutoUpdate success ✅ 0.8s\n"}
+,{"stream_name":"stdout","time":22.404510178,"data":"WARNING ⚠️ \u001b[31m\u001b[1mrequirements:\u001b[0m \u001b[1mRestart runtime or rerun command for updates to take effect\u001b[0m\n"}
+,{"stream_name":"stdout","time":22.404515565,"data":"\n"}
+,{"stream_name":"stdout","time":28.569869645,"data":"[botsort] 1/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":32.060389456,"data":"[botsort] 2/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":35.494254062,"data":"[botsort] 3/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":38.852502141,"data":"[botsort] 4/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":42.077467186,"data":"[botsort] 5/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":45.408927418,"data":"[botsort] 6/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":48.611105404,"data":"[botsort] 7/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":51.795904809,"data":"[botsort] 8/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":54.906394782,"data":"[botsort] 9/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":58.089025126,"data":"[botsort] 10/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":61.44512111,"data":"[botsort] 11/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":64.864236994,"data":"[botsort] 12/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":68.394369066,"data":"[botsort] 13/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":72.035689958,"data":"[botsort] 14/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":75.535547974,"data":"[botsort] 15/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":78.983514255,"data":"[botsort] 16/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":82.475262404,"data":"[botsort] 17/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":86.003012743,"data":"[botsort] 18/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":89.416730417,"data":"[botsort] 19/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":92.864616562,"data":"[botsort] 20/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":96.317378078,"data":"[botsort] 21/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":99.737785509,"data":"[botsort] 22/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":103.24986765,"data":"[botsort] 23/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":106.839883721,"data":"[botsort] 24/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":110.22272532,"data":"[botsort] 25/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":113.850362685,"data":"[botsort] 26/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":117.454049022,"data":"[botsort] 27/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":120.854133681,"data":"[botsort] 28/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":124.312277309,"data":"[botsort] 29/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":127.661007976,"data":"[botsort] 30/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":131.08735739,"data":"[botsort] 31/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":134.537079371,"data":"[botsort] 32/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":138.058934432,"data":"[botsort] 33/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":141.483542575,"data":"[botsort] 34/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":144.923225822,"data":"[botsort] 35/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":148.345161991,"data":"[botsort] 36/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":151.721825091,"data":"[botsort] 37/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":155.106799777,"data":"[botsort] 38/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":158.474061434,"data":"[botsort] 39/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":161.733467781,"data":"[botsort] 40/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":165.008295324,"data":"[botsort] 41/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":168.321934925,"data":"[botsort] 42/60s | occupancy=1 entries=1 exits=0\n"}
+,{"stream_name":"stdout","time":171.518027555,"data":"[botsort] 43/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":174.788977457,"data":"[botsort] 44/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":178.23089494,"data":"[botsort] 45/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":181.69799207,"data":"[botsort] 46/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":185.197617137,"data":"[botsort] 47/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":188.726563258,"data":"[botsort] 48/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":192.421977694,"data":"[botsort] 49/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":196.007983429,"data":"[botsort] 50/60s | occupancy=1 entries=2 exits=1\n"}
+,{"stream_name":"stdout","time":199.502325941,"data":"[botsort] 51/60s | occupancy=1 entries=3 exits=2\n"}
+,{"stream_name":"stdout","time":202.979429244,"data":"[botsort] 52/60s | occupancy=1 entries=4 exits=3\n"}
+,{"stream_name":"stdout","time":206.459814947,"data":"[botsort] 53/60s | occupancy=0 entries=4 exits=4\n"}
+,{"stream_name":"stdout","time":209.848167739,"data":"[botsort] 54/60s | occupancy=0 entries=4 exits=4\n"}
+,{"stream_name":"stdout","time":213.446333615,"data":"[botsort] 55/60s | occupancy=0 entries=4 exits=4\n"}
+,{"stream_name":"stdout","time":217.014888175,"data":"[botsort] 56/60s | occupancy=1 entries=5 exits=4\n"}
+,{"stream_name":"stdout","time":220.556289508,"data":"[botsort] 57/60s | occupancy=1 entries=5 exits=4\n"}
+,{"stream_name":"stdout","time":224.125145385,"data":"[botsort] 58/60s | occupancy=0 entries=5 exits=5\n"}
+,{"stream_name":"stdout","time":227.65284229,"data":"[botsort] 59/60s | occupancy=0 entries=5 exits=5\n"}
+,{"stream_name":"stdout","time":231.089122585,"data":"[botsort] 60/60s | occupancy=0 entries=5 exits=5\n"}
+,{"stream_name":"stdout","time":231.092087122,"data":"Finished botsort. Output saved to: /kaggle/working/output_yolov26x_botsort_enterprise.mp4\n"}
+,{"stream_name":"stdout","time":231.092102437,"data":"Loading detector: yolov26x.pt\n"}
+,{"stream_name":"stdout","time":231.336294328,"data":"Could not load yolov26x.pt: [Errno 2] No such file or directory: 'yolov26x.pt'\n"}
+,{"stream_name":"stdout","time":231.336321405,"data":"Loading detector: yolo26x.pt\n"}
+,{"stream_name":"stdout","time":231.567865943,"data":"Processing /kaggle/input/datasets/almightyj/oxford-town-centre/TownCentreXVID.mp4 with yolo26x.pt, bytetrack, Tesla T4. Stopping after 60s (1500 frames).\n"}
+,{"stream_name":"stdout","time":234.668189827,"data":"[bytetrack] 1/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":237.286628101,"data":"[bytetrack] 2/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":239.861789405,"data":"[bytetrack] 3/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":242.443812891,"data":"[bytetrack] 4/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":244.945372713,"data":"[bytetrack] 5/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":247.506549347,"data":"[bytetrack] 6/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":249.97481651,"data":"[bytetrack] 7/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":252.380687147,"data":"[bytetrack] 8/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":254.639140061,"data":"[bytetrack] 9/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":256.879381606,"data":"[bytetrack] 10/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":259.283583718,"data":"[bytetrack] 11/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":261.897664784,"data":"[bytetrack] 12/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":264.570523833,"data":"[bytetrack] 13/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":267.348877155,"data":"[bytetrack] 14/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":270.069353588,"data":"[bytetrack] 15/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":272.781959268,"data":"[bytetrack] 16/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":275.531227186,"data":"[bytetrack] 17/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":278.269498887,"data":"[bytetrack] 18/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":280.943343727,"data":"[bytetrack] 19/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":283.611729814,"data":"[bytetrack] 20/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":286.294667151,"data":"[bytetrack] 21/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":288.96702187,"data":"[bytetrack] 22/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":291.68143281,"data":"[bytetrack] 23/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":294.477869305,"data":"[bytetrack] 24/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":297.212844066,"data":"[bytetrack] 25/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":300.076420657,"data":"[bytetrack] 26/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":302.854016265,"data":"[bytetrack] 27/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":305.536590882,"data":"[bytetrack] 28/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":308.225427119,"data":"[bytetrack] 29/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":310.873652685,"data":"[bytetrack] 30/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":313.611986438,"data":"[bytetrack] 31/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":316.29517929,"data":"[bytetrack] 32/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":319.02864707,"data":"[bytetrack] 33/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":321.746509087,"data":"[bytetrack] 34/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":324.478655875,"data":"[bytetrack] 35/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":327.192654378,"data":"[bytetrack] 36/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":329.849274895,"data":"[bytetrack] 37/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":332.525975987,"data":"[bytetrack] 38/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":335.207423395,"data":"[bytetrack] 39/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":337.760681775,"data":"[bytetrack] 40/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":340.28415215,"data":"[bytetrack] 41/60s | occupancy=0 entries=0 exits=0\n"}
+,{"stream_name":"stdout","time":342.803796044,"data":"[bytetrack] 42/60s | occupancy=1 entries=1 exits=0\n"}
+,{"stream_name":"stdout","time":345.235002064,"data":"[bytetrack] 43/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":347.646760232,"data":"[bytetrack] 44/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":350.271515145,"data":"[bytetrack] 45/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":353.010683376,"data":"[bytetrack] 46/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":355.795512453,"data":"[bytetrack] 47/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":358.628647815,"data":"[bytetrack] 48/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":361.570240092,"data":"[bytetrack] 49/60s | occupancy=0 entries=1 exits=1\n"}
+,{"stream_name":"stdout","time":364.430315165,"data":"[bytetrack] 50/60s | occupancy=1 entries=2 exits=1\n"}
+,{"stream_name":"stdout","time":367.257883691,"data":"[bytetrack] 51/60s | occupancy=1 entries=3 exits=2\n"}
+,{"stream_name":"stdout","time":370.077680392,"data":"[bytetrack] 52/60s | occupancy=1 entries=4 exits=3\n"}
+,{"stream_name":"stdout","time":372.875673749,"data":"[bytetrack] 53/60s | occupancy=0 entries=4 exits=4\n"}
+,{"stream_name":"stdout","time":375.604623564,"data":"[bytetrack] 54/60s | occupancy=0 entries=4 exits=4\n"}
+,{"stream_name":"stdout","time":378.529281266,"data":"[bytetrack] 55/60s | occupancy=0 entries=4 exits=4\n"}
+,{"stream_name":"stdout","time":381.385118596,"data":"[bytetrack] 56/60s | occupancy=1 entries=5 exits=4\n"}
+,{"stream_name":"stdout","time":384.243760169,"data":"[bytetrack] 57/60s | occupancy=1 entries=5 exits=4\n"}
+,{"stream_name":"stdout","time":387.083078347,"data":"[bytetrack] 58/60s | occupancy=0 entries=5 exits=5\n"}
+,{"stream_name":"stdout","time":389.917510606,"data":"[bytetrack] 59/60s | occupancy=0 entries=5 exits=5\n"}
+,{"stream_name":"stdout","time":392.751945273,"data":"[bytetrack] 60/60s | occupancy=0 entries=5 exits=5\n"}
+,{"stream_name":"stdout","time":392.753600298,"data":"Finished bytetrack. Output saved to: /kaggle/working/output_yolov26x_bytetrack_enterprise.mp4\n"}
+,{"stream_name":"stderr","time":397.49710569,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":397.497136513,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":397.744141092,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":397.744169045,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":398.389061038,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":399.677525739,"data":"[NbConvertApp] Writing 334983 bytes to __results__.html\n"}
+]
