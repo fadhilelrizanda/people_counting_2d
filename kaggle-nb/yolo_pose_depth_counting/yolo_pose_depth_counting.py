@@ -19,6 +19,8 @@ install_deps()
 import cv2
 import numpy as np
 import torch
+import torch.distributed as dist
+import torch.multiprocessing as mp
 from ultralytics import YOLO
 from transformers import AutoImageProcessor, AutoModelForDepthEstimation
 
@@ -41,36 +43,22 @@ def load_region_points():
         if region_file.exists():
             with region_file.open("r", encoding="utf-8") as f:
                 data = json.load(f)
-            print(f"Loaded region file: {region_file}")
             region = data.get("region", DEFAULT_REGION)
             return np.array(region, np.int32).reshape((-1, 1, 2))
-    print("Region file not found; using embedded selected region.")
     return np.array(DEFAULT_REGION, np.int32).reshape((-1, 1, 2))
 
 
-def select_device():
-    if not torch.cuda.is_available():
-        return "cpu", "CPU"
-    device_name = torch.cuda.get_device_name(0)
-    if "P100" in device_name:
-        return "cpu", "P100 fallback: CPU"
-    return "cuda:0", device_name
-
-
-def load_detection_model():
-    last_error = None
+def load_detection_model(device_str):
     for model_name in MODEL_CANDIDATES:
         try:
-            print(f"Loading pose detector: {model_name}")
-            return YOLO(model_name), model_name
-        except Exception as exc:
-            last_error = exc
-            print(f"Could not load {model_name}: {exc}")
-    raise RuntimeError(f"Unable to load any detection model. Last error: {last_error}")
+            model = YOLO(model_name)
+            return model, model_name
+        except Exception:
+            pass
+    raise RuntimeError("Unable to load any detection model.")
 
 
 def load_depth_model(device_str):
-    print("Loading Depth Anything model...")
     image_processor = AutoImageProcessor.from_pretrained("LiheYoung/depth-anything-small-hf")
     depth_model = AutoModelForDepthEstimation.from_pretrained("LiheYoung/depth-anything-small-hf")
     if "cuda" in device_str:
@@ -94,17 +82,9 @@ def draw_metric(frame, label, value, x, y, accent):
 
 
 def draw_status_panel(
-    frame,
-    model_name,
-    tracker_type,
-    device_name,
-    fps,
-    elapsed_sec,
-    interested_count,
-    not_interested_count,
-    active_tracks,
-    active_in_region,
-    dwell_seconds_required,
+    frame, model_name, tracker_type, device_name, fps, elapsed_sec,
+    interested_count, not_interested_count, active_tracks, active_in_region,
+    dwell_seconds_required, rank
 ):
     panel_x, panel_y = 28, 28
     panel_w, panel_h = 520, 244
@@ -120,7 +100,7 @@ def draw_status_panel(
     cv2.rectangle(frame, (panel_x, panel_y), (panel_x + panel_w, panel_y + panel_h), (51, 65, 85), 1)
     cv2.line(frame, (panel_x, panel_y), (panel_x + panel_w, panel_y), border, 4)
 
-    draw_text(frame, "INTEREST ANALYTICS (POSE + DEPTH)", (panel_x + 22, panel_y + 38), 0.65, white, 1, cv2.FONT_HERSHEY_DUPLEX)
+    draw_text(frame, f"INTEREST ANALYTICS [DDP RANK {rank}]", (panel_x + 22, panel_y + 38), 0.65, white, 1, cv2.FONT_HERSHEY_DUPLEX)
     draw_text(frame, "Dwell + Facing Booth + Depth Filter", (panel_x + 22, panel_y + 64), 0.45, muted, 1)
 
     draw_metric(frame, "Interested", interested_count, panel_x + 24, panel_y + 108, green)
@@ -140,19 +120,22 @@ def draw_status_panel(
     )
 
 
-def process_video(input_path, output_path, tracker_type="botsort", max_duration_sec=120):
-    device_to_use, device_name = select_device()
-    model, model_name = load_detection_model()
+def process_video(input_path, output_path, tracker_type, rank):
+    device_to_use = f"cuda:{rank}" if torch.cuda.is_available() else "cpu"
+    device_name = torch.cuda.get_device_name(rank) if torch.cuda.is_available() else "CPU"
+
+    model, model_name = load_detection_model(device_to_use)
     image_processor, depth_model = load_depth_model(device_to_use)
 
     cap = cv2.VideoCapture(input_path)
     if not cap.isOpened():
-        print(f"Error: Could not open input video {input_path}")
+        print(f"[Rank {rank}] Error: Could not open {input_path}")
         return
 
     fps = int(cap.get(cv2.CAP_PROP_FPS)) or 25
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    max_duration_sec = 120
     max_frames = fps * max_duration_sec
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -169,34 +152,25 @@ def process_video(input_path, output_path, tracker_type="botsort", max_duration_
     start_time = prev_time
     frame_count = 0
 
-    print(f"Processing {input_path} with {model_name}, DepthAnything, {tracker_type}, {device_name}.")
+    print(f"[Rank {rank}] Processing {input_path} with {model_name}, DepthAnything, {tracker_type}, {device_name}.")
 
     while cap.isOpened() and frame_count < max_frames:
         success, frame = cap.read()
         if not success:
             break
 
-        # 1. Pose Tracking
         results = model.track(
-            frame,
-            persist=True,
-            tracker=tracker_yaml,
-            conf=0.25,
-            iou=0.5,
-            classes=[0],
-            verbose=False,
-            device=device_to_use,
+            frame, persist=True, tracker=tracker_yaml, conf=0.25, iou=0.5,
+            classes=[0], verbose=False, device=device_to_use,
         )
 
         annotated_frame = frame.copy()
         
-        # Region overlay
         region_overlay = annotated_frame.copy()
         cv2.fillPoly(region_overlay, [region_pts], (45, 212, 191))
         cv2.addWeighted(region_overlay, 0.16, annotated_frame, 0.84, 0, annotated_frame)
         cv2.polylines(annotated_frame, [region_pts], isClosed=True, color=(45, 212, 191), thickness=7)
 
-        # 2. Depth Estimation
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         pil_img = Image.fromarray(rgb_frame)
         inputs = image_processor(images=pil_img, return_tensors="pt")
@@ -214,12 +188,11 @@ def process_video(input_path, output_path, tracker_type="botsort", max_duration_
             ).squeeze()
             depth_map = predicted_depth.cpu().numpy()
 
-        # Calculate a median depth of the region to act as our "booth depth"
         mask = np.zeros((height, width), dtype=np.uint8)
         cv2.fillPoly(mask, [region_pts], 255)
         region_depths = depth_map[mask == 255]
         booth_depth = np.median(region_depths) if len(region_depths) > 0 else 0
-        depth_tolerance = 5.0 # Relative depth tolerance
+        depth_tolerance = 5.0 
 
         active_tracks = 0
         active_in_region = 0
@@ -228,28 +201,22 @@ def process_video(input_path, output_path, tracker_type="botsort", max_duration_
             boxes = results[0].boxes.xyxy.cpu().numpy()
             track_ids = results[0].boxes.id.int().cpu().numpy()
             keypoints = results[0].keypoints.data.cpu().numpy() if results[0].keypoints is not None else None
-            
             active_tracks = len(track_ids)
 
             for i, (box, track_id) in enumerate(zip(boxes, track_ids)):
                 x1, y1, x2, y2 = map(int, box)
                 anchor = ((x1 + x2) // 2, y2)
                 
-                # Check 2D Region overlap
                 in_2d_region = cv2.pointPolygonTest(region_pts, anchor, False) >= 0
-                
-                # Check 3D Depth
                 person_depth = depth_map[min(y2, height-1), min((x1+x2)//2, width-1)]
                 depth_valid = abs(person_depth - booth_depth) < depth_tolerance
                 
-                # Check Pose Orientation (Facing camera/booth)
                 is_facing = False
                 if keypoints is not None:
-                    kps = keypoints[i] # Shape: (17, 3)
+                    kps = keypoints[i] 
                     nose_conf = kps[0][2]
                     left_eye_conf = kps[1][2]
                     right_eye_conf = kps[2][2]
-                    # Simple heuristic: if face features are highly visible, they are facing front
                     if nose_conf > 0.5 and (left_eye_conf > 0.5 or right_eye_conf > 0.5):
                         is_facing = True
 
@@ -260,12 +227,7 @@ def process_video(input_path, output_path, tracker_type="botsort", max_duration_
 
                 state = track_states.setdefault(
                     int(track_id),
-                    {
-                        "inside": False,
-                        "inside_since_frame": None,
-                        "last_dwell_seconds": 0.0,
-                        "classification": None,
-                    },
+                    {"inside": False, "inside_since_frame": None, "last_dwell_seconds": 0.0, "classification": None},
                 )
 
                 if is_valid_interest:
@@ -291,15 +253,12 @@ def process_video(input_path, output_path, tracker_type="botsort", max_duration_
                 if len(track_history[track_id]) > max_history:
                     track_history[track_id].pop(0)
 
-                # Visuals
                 color = (74, 222, 128) if state["classification"] == "interested" else (251, 191, 36) if is_valid_interest else (96, 165, 250)
                 cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), color, 2)
                 cv2.circle(annotated_frame, anchor, 6, color, -1)
                 
-                # Draw skeleton if valid
                 if is_facing and keypoints is not None:
-                    kps = keypoints[i]
-                    for kp in kps[:5]: # Face keypoints
+                    for kp in keypoints[i][:5]:
                         if kp[2] > 0.5:
                             cv2.circle(annotated_frame, (int(kp[0]), int(kp[1])), 3, (0, 0, 255), -1)
 
@@ -322,14 +281,14 @@ def process_video(input_path, output_path, tracker_type="botsort", max_duration_
         draw_status_panel(
             annotated_frame, model_name, tracker_type, device_name,
             inference_fps, elapsed_sec, interested_count, not_interested_count,
-            active_tracks, active_in_region, DWELL_SECONDS_REQUIRED
+            active_tracks, active_in_region, DWELL_SECONDS_REQUIRED, rank
         )
 
         out.write(annotated_frame)
         frame_count += 1
 
         if frame_count % fps == 0:
-            print(f"[{tracker_type}] {frame_count // fps}/{max_duration_sec}s | in_region={active_in_region} interested={interested_count} not_interested={not_interested_count}")
+            print(f"[Rank {rank}] {frame_count // fps}/{max_duration_sec}s | in_region={active_in_region} int={interested_count} not_int={not_interested_count}")
 
     for state in track_states.values():
         if state["inside"] and state["classification"] is None:
@@ -342,8 +301,28 @@ def process_video(input_path, output_path, tracker_type="botsort", max_duration_
 
     cap.release()
     out.release()
-    print(f"Final counts: interested={interested_count} not_interested={not_interested_count}")
-    print(f"Finished. Output saved to: {output_path}")
+    print(f"[Rank {rank}] Final counts: interested={interested_count} not_interested={not_interested_count}")
+    print(f"[Rank {rank}] Finished. Output saved to: {output_path}")
+
+
+def main_worker(rank, world_size, video_files, output_dir):
+    if world_size > 1:
+        os.environ['MASTER_ADDR'] = 'localhost'
+        os.environ['MASTER_PORT'] = '12355'
+        dist.init_process_group("nccl", rank=rank, world_size=world_size)
+        torch.cuda.set_device(rank)
+
+    # Shard videos across available GPUs (DDP dataset parallelization)
+    my_videos = [v for i, v in enumerate(video_files) if i % world_size == rank]
+    
+    for input_video in my_videos:
+        out_name = f"rank{rank}_" + os.path.basename(input_video).replace(".mp4", "_out.mp4").replace(".avi", "_out.mp4")
+        out_path = os.path.join(output_dir, out_name)
+        process_video(input_video, out_path, tracker_type="botsort", rank=rank)
+        
+    if world_size > 1:
+        dist.destroy_process_group()
+
 
 if __name__ == "__main__":
     video_files = glob.glob("/kaggle/input/**/*.mp4", recursive=True) + glob.glob("/kaggle/input/**/*.avi", recursive=True)
@@ -352,12 +331,13 @@ if __name__ == "__main__":
         print("Error: No video files found.")
         sys.exit(1)
 
-    print(f"Found videos: {video_files}")
-    input_video = video_files[0]
+    print(f"Found {len(video_files)} videos: {video_files}")
     output_dir = "/kaggle/working" if os.path.exists("/kaggle/working") else "."
     
-    process_video(
-        input_video,
-        os.path.join(output_dir, "output_yolo_pose_depth_counting.mp4"),
-        tracker_type="botsort",
-    )
+    world_size = torch.cuda.device_count()
+    if world_size > 1:
+        print(f"Using DDP with {world_size} GPUs. Sharding {len(video_files)} videos.")
+        mp.spawn(main_worker, args=(world_size, video_files, output_dir), nprocs=world_size, join=True)
+    else:
+        print("Using single GPU/CPU processing.")
+        main_worker(0, 1, video_files, output_dir)
