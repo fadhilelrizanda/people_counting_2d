@@ -26,10 +26,10 @@ from transformers import AutoImageProcessor, AutoModelForDepthEstimation
 
 REGION_FILE = Path(__file__).with_name("region_data.json")
 DEFAULT_REGION = [
-    [567, 854],
-    [770, 525],
-    [1298, 578],
-    [1144, 976]
+    [43, 1619],
+    [257, 1141],
+    [962, 1222],
+    [755, 1763]
 ]
 MODEL_CANDIDATES = [
     "yolo11x.pt",
@@ -211,13 +211,13 @@ def process_video(input_path, output_path, tracker_type, rank):
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
-    max_duration_sec = 60
-    max_frames = 5  # Quick 5-frame test as requested
+    max_duration_sec = 5
+    max_frames = fps * max_duration_sec
 
     target_h = 1080  # Full scale camera video
     scale = target_h / height
     target_w = int(width * scale)
-    bev_w, bev_h = target_w, target_h  # Exactly 50:50 ratio
+    bev_w, bev_h = 720, 720  # Reverted 50:50, use compact 720x720 radar
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     out = cv2.VideoWriter(output_path, fourcc, fps, (target_w + bev_w, target_h))
