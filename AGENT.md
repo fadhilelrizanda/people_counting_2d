@@ -126,7 +126,17 @@ This project relies exclusively on the **Oxford Town Centre** dataset as its pri
 
 ---
 
-## 8. Development & Execution Rules
+## 8. Depth-Anything V2 & Homography BEV Pipeline
+
+A high-performance pipeline was built in `kaggle-nb/yolo_pose_depth_counting` combining YOLO tracking with Depth-Anything-V2:
+* **True Homography Mapping**: Uses `cv2.findHomography` to mathematically warp the camera view into a perfect 2D Bird's Eye View (BEV) radar.
+* **Dynamic Z-Axis Plane**: Uses a least-squares polynomial solver (`np.linalg.lstsq`) to calculate the exact gradient angle of the floor, preventing false positive tracking.
+* **Temporal Smoothing**: Employs double Exponential Moving Average (EMA) filters to stabilize both YOLO bounding boxes and Z-axis depth maps.
+* **Patch-Based Depth Sampling**: Extracts a 5x5 pixel median patch to calculate person depth perfectly without noise spikes.
+
+---
+
+## 9. Development & Execution Rules
 
 To maintain consistency and proper workflow throughout the project, adhere to the following rules:
 1. **Execution Environment**: Kaggle kernels should be executed remotely using the tools provided by the `kaggle-mcp` server, while the code resides in `kaggle-nb`.

@@ -1,2 +1,4 @@
 .env
 *.mp4
+yolo11x*.pt
+*.pt
