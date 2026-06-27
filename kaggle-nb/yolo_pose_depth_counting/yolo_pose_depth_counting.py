@@ -36,7 +36,7 @@ MODEL_CANDIDATES = [
     "yolo26x.pt",
 ]
 DEPTH_MODEL_REPO = "depth-anything/Depth-Anything-V2-Large-hf"
-MAX_DURATION_SEC = 5
+MAX_DURATION_SEC = 120
 DEPTH_EVERY_N_FRAMES = 5
 DWELL_SECONDS_REQUIRED = 3.0
 
