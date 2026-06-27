@@ -26,10 +26,10 @@ from transformers import AutoImageProcessor, AutoModelForDepthEstimation
 
 REGION_FILE = Path(__file__).with_name("region_data.json")
 DEFAULT_REGION = [
-    [43, 1619],
-    [257, 1141],
-    [962, 1222],
-    [755, 1763]
+    [1316, 437],
+    [1316, 623],
+    [1722, 606],
+    [1668, 415]
 ]
 MODEL_CANDIDATES = [
     "yolov26x.pt",
