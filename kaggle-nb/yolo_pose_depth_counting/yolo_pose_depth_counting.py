@@ -32,10 +32,13 @@ DEFAULT_REGION = [
     [755, 1763]
 ]
 MODEL_CANDIDATES = [
-    "yolo11x.pt",
-    "yolov8x.pt",
+    "yolo11m.pt",
+    "yolov8m.pt",
 ]
-DWELL_SECONDS_REQUIRED = 10.0
+DEPTH_MODEL_REPO = "depth-anything/Depth-Anything-V2-Small-hf"
+MAX_DURATION_SEC = 5
+DEPTH_EVERY_N_FRAMES = 5
+DWELL_SECONDS_REQUIRED = 3.0
 
 
 def load_region_points():
@@ -63,12 +66,13 @@ def order_points(pts):
 def get_homography(region_pts, bev_w, bev_h, margin=180):
     src_pts = order_points(region_pts)
     cx, cy = bev_w // 2, bev_h // 2
-    hs = min(bev_w, bev_h) // 3
+    zone_w = int(bev_w * 0.56)
+    zone_h = int(bev_h * 0.46)
     dst_pts = np.array([
-        [cx - hs, cy - hs],
-        [cx + hs, cy - hs],
-        [cx + hs, cy + hs],
-        [cx - hs, cy + hs]
+        [cx - zone_w // 2, cy - zone_h // 2],
+        [cx + zone_w // 2, cy - zone_h // 2],
+        [cx + zone_w // 2, cy + zone_h // 2],
+        [cx - zone_w // 2, cy + zone_h // 2]
     ], dtype="float32")
     H, _ = cv2.findHomography(src_pts, dst_pts)
     return H, dst_pts
@@ -103,11 +107,11 @@ def load_detection_model(device_str):
 
 
 def load_depth_model(device_str):
-    model_repo = "depth-anything/Depth-Anything-V2-Large-hf"
-    image_processor = AutoImageProcessor.from_pretrained(model_repo)
-    depth_model = AutoModelForDepthEstimation.from_pretrained(model_repo)
+    image_processor = AutoImageProcessor.from_pretrained(DEPTH_MODEL_REPO)
+    depth_model = AutoModelForDepthEstimation.from_pretrained(DEPTH_MODEL_REPO)
     if "cuda" in device_str:
         depth_model = depth_model.to(device_str)
+    depth_model.eval()
     return image_processor, depth_model
 
 
@@ -145,54 +149,87 @@ def draw_enterprise_box(frame, x1, y1, x2, y2, color, thickness=2):
     cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
     cv2.addWeighted(overlay, 0.1, frame, 0.9, 0, frame)
 
-def draw_status_panel(
-    frame, model_name, tracker_type, device_name, fps, elapsed_sec,
-    interested_count, not_interested_count, active_tracks, active_in_region,
-    dwell_seconds_required, rank, frame_count, max_frames
-):
-    panel_x, panel_y = 30, 30
-    panel_w, panel_h = 560, 310
-    
-    bg_color = (20, 25, 30)
-    accent_color = (255, 140, 0)
-    border_color = (80, 90, 100)
-    text_primary = (255, 255, 255)
-    text_secondary = (180, 190, 200)
-    
-    draw_translucent_rect(frame, (panel_x, panel_y), (panel_x + panel_w, panel_y + panel_h), bg_color, 0.85)
-    cv2.rectangle(frame, (panel_x, panel_y), (panel_x + panel_w, panel_y + panel_h), border_color, 1)
-    cv2.rectangle(frame, (panel_x, panel_y), (panel_x + panel_w, panel_y + 6), accent_color, -1)
-    
-    draw_text(frame, "ENTERPRISE TELEMETRY DASHBOARD", (panel_x + 25, panel_y + 40), 0.7, text_primary, 2, cv2.FONT_HERSHEY_DUPLEX)
-    draw_text(frame, "Live 3D-Aware tracking & Homography BEV Analytics", (panel_x + 25, panel_y + 65), 0.5, text_secondary, 1)
-    
-    is_live = (int(time.time() * 2) % 2) == 0
-    dot_color = (0, 0, 255) if is_live else (50, 50, 50)
-    cv2.circle(frame, (panel_x + panel_w - 50, panel_y + 35), 6, dot_color, -1)
-    draw_text(frame, "LIVE", (panel_x + panel_w - 35, panel_y + 40), 0.5, text_primary, 1)
-    
-    cv2.line(frame, (panel_x + 25, panel_y + 85), (panel_x + panel_w - 25, panel_y + 85), (80, 80, 90), 1)
-    
-    def metric_box(x, y, label, val, color):
-        cv2.rectangle(frame, (x, y), (x + 155, y + 80), (30, 35, 45), -1)
-        cv2.rectangle(frame, (x, y), (x + 155, y + 80), color, 1)
-        draw_text(frame, label, (x + 10, y + 25), 0.45, text_secondary, 1)
-        draw_text(frame, str(val), (x + 10, y + 65), 1.2, color, 2, cv2.FONT_HERSHEY_DUPLEX)
-        
-    metric_box(panel_x + 25, panel_y + 105, "INTERESTED", interested_count, (74, 222, 128))
-    metric_box(panel_x + 195, panel_y + 105, "IGNORED", not_interested_count, (96, 165, 250))
-    metric_box(panel_x + 365, panel_y + 105, "ACTIVE ROI", active_in_region, (251, 191, 36))
-    
-    sys_y = panel_y + 225
-    draw_text(frame, f"ENGINE : {model_name.upper()} + DEPTH-ANYTHING-V2", (panel_x + 25, sys_y), 0.45, text_secondary, 1)
-    draw_text(frame, f"TRACKER: {tracker_type.upper()} | TARGET FPS: {fps:.1f}", (panel_x + 25, sys_y + 25), 0.45, text_secondary, 1)
-    draw_text(frame, f"DEVICE : {device_name[:30]} (Rank {rank})", (panel_x + 25, sys_y + 50), 0.45, text_secondary, 1)
-    
+def draw_status_panel(frame, model_name, tracker_type, device_name, fps, interested_count, not_interested_count, active_tracks, active_in_region, rank, frame_count, max_frames):
+    x, y, w, h = 28, 28, 520, 236
+    panel = (14, 20, 30)
+    border = (55, 65, 80)
+    white = (245, 247, 250)
+    muted = (170, 180, 195)
+    green = (90, 230, 155)
+    blue = (105, 170, 255)
+    amber = (255, 200, 80)
+
+    draw_translucent_rect(frame, (x, y), (x + w, y + h), panel, 0.84)
+    cv2.rectangle(frame, (x, y), (x + w, y + h), border, 1)
+    cv2.line(frame, (x, y), (x + w, y), amber, 4)
+    draw_text(frame, "DEPTH-AWARE BEV ANALYTICS", (x + 22, y + 36), 0.72, white, 1, cv2.FONT_HERSHEY_DUPLEX)
+    draw_text(frame, "YOLO tracking + Depth-Anything V2 + homography map", (x + 22, y + 62), 0.46, muted, 1)
+
+    def metric(mx, label, value, color):
+        cv2.rectangle(frame, (mx, y + 88), (mx + 145, y + 154), (25, 32, 44), -1)
+        cv2.rectangle(frame, (mx, y + 88), (mx + 145, y + 154), color, 1)
+        draw_text(frame, label, (mx + 10, y + 112), 0.43, muted, 1)
+        draw_text(frame, str(value), (mx + 10, y + 145), 0.86, color, 2, cv2.FONT_HERSHEY_DUPLEX)
+
+    metric(x + 22, "INTERESTED", interested_count, green)
+    metric(x + 188, "IGNORED", not_interested_count, blue)
+    metric(x + 354, "IN ROI", active_in_region, amber)
+    draw_text(frame, f"{model_name} | {tracker_type} | tracks {active_tracks} | rank {rank}", (x + 22, y + 188), 0.46, muted, 1)
+    draw_text(frame, f"{device_name[:34]} | {fps:.1f} FPS | depth every {DEPTH_EVERY_N_FRAMES} frames", (x + 22, y + 214), 0.46, muted, 1)
+
     progress = min(1.0, frame_count / float(max(1, max_frames)))
-    bar_x, bar_y = panel_x + 25, panel_y + 290
-    bar_w = panel_w - 50
-    cv2.rectangle(frame, (bar_x, bar_y), (bar_x + bar_w, bar_y + 4), (50, 50, 60), -1)
-    cv2.rectangle(frame, (bar_x, bar_y), (bar_x + int(bar_w * progress), bar_y + 4), accent_color, -1)
+    cv2.rectangle(frame, (x + 22, y + h - 12), (x + w - 22, y + h - 8), (45, 50, 60), -1)
+    cv2.rectangle(frame, (x + 22, y + h - 12), (x + 22 + int((w - 44) * progress), y + h - 8), amber, -1)
+
+
+def draw_bev_canvas(bev_w, bev_h, bev_dst_pts, frame_count):
+    bev = np.zeros((bev_h, bev_w, 3), dtype=np.uint8)
+    bev[:] = (18, 20, 24)
+
+    for y in range(0, bev_h, 72):
+        shade = 28 if (y // 72) % 2 == 0 else 24
+        cv2.rectangle(bev, (0, y), (bev_w, min(bev_h, y + 72)), (shade, shade + 3, shade + 7), -1)
+
+    grid_major = (62, 70, 80)
+    grid_minor = (38, 44, 52)
+    for i in range(0, max(bev_w, bev_h), 40):
+        color = grid_major if i % 160 == 0 else grid_minor
+        cv2.line(bev, (i, 0), (i, bev_h), color, 1)
+        cv2.line(bev, (0, i), (bev_w, i), color, 1)
+
+    overlay = bev.copy()
+    cv2.fillPoly(overlay, [np.int32(bev_dst_pts)], (46, 128, 190))
+    cv2.addWeighted(overlay, 0.18, bev, 0.82, 0, bev)
+    cv2.polylines(bev, [np.int32(bev_dst_pts)], isClosed=True, color=(96, 190, 255), thickness=3)
+
+    for point in np.int32(bev_dst_pts):
+        cv2.circle(bev, tuple(point), 6, (245, 210, 110), -1)
+
+    cv2.rectangle(bev, (22, 22), (bev_w - 22, 92), (18, 20, 24), -1)
+    cv2.rectangle(bev, (22, 22), (bev_w - 22, 92), (88, 98, 112), 1)
+    draw_text(bev, "2D BEV MAP", (40, 50), 0.72, (245, 247, 250), 1, cv2.FONT_HERSHEY_DUPLEX)
+    draw_text(bev, "zoomed-out homography projection, depth-plane gated", (40, 76), 0.43, (176, 188, 204), 1)
+    return bev
+
+
+def draw_bev_person(bev_canvas, point, track_id, color, classification):
+    bx, by = point
+    halo = bev_canvas.copy()
+    cv2.circle(halo, (bx, by), 20, color, -1)
+    cv2.addWeighted(halo, 0.22, bev_canvas, 0.78, 0, bev_canvas)
+    cv2.circle(bev_canvas, (bx, by), 11, (245, 247, 250), -1)
+    cv2.circle(bev_canvas, (bx, by), 8, color, -1)
+    cv2.circle(bev_canvas, (bx, by), 14, color, 2)
+
+    label = f"ID {track_id}"
+    if classification:
+        label += f" {classification}"
+    label_w = max(64, cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.44, 1)[0][0] + 18)
+    x1 = min(max(8, bx + 16), bev_canvas.shape[1] - label_w - 8)
+    y1 = min(max(102, by - 14), bev_canvas.shape[0] - 32)
+    draw_translucent_rect(bev_canvas, (x1, y1), (x1 + label_w, y1 + 26), (20, 24, 31), 0.86)
+    cv2.rectangle(bev_canvas, (x1, y1), (x1 + label_w, y1 + 26), color, 1)
+    draw_text(bev_canvas, label, (x1 + 8, y1 + 18), 0.44, (245, 247, 250), 1)
 
 
 def process_video(input_path, output_path, tracker_type, rank):
@@ -211,13 +248,13 @@ def process_video(input_path, output_path, tracker_type, rank):
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
-    max_duration_sec = 5
+    max_duration_sec = MAX_DURATION_SEC
     max_frames = fps * max_duration_sec
 
-    target_h = 1080  # Full scale camera video
+    target_h = 900
     scale = target_h / height
     target_w = int(width * scale)
-    bev_w, bev_h = 720, 720  # Reverted 50:50, use compact 720x720 radar
+    bev_w, bev_h = max(640, target_w), target_h
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     out = cv2.VideoWriter(output_path, fourcc, fps, (target_w + bev_w, target_h))
@@ -238,10 +275,10 @@ def process_video(input_path, output_path, tracker_type, rank):
     max_history = 50
     tracker_yaml = "botsort.yaml" if tracker_type == "botsort" else "bytetrack.yaml"
     prev_time = time.time()
-    start_time = prev_time
     frame_count = 0
+    depth_norm = None
 
-    print(f"[Rank {rank}] Processing {input_path} (10 seconds) with Homography BEV...")
+    print(f"[Rank {rank}] Processing {input_path} ({max_duration_sec} seconds) with optimized Depth-Anything V2 BEV...")
 
     while cap.isOpened() and frame_count < max_frames:
         success, frame = cap.read()
@@ -260,62 +297,29 @@ def process_video(input_path, output_path, tracker_type, rank):
         cv2.addWeighted(region_overlay, 0.16, annotated_frame, 0.84, 0, annotated_frame)
         cv2.polylines(annotated_frame, [region_pts], isClosed=True, color=(45, 212, 191), thickness=7)
 
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        pil_img = Image.fromarray(rgb_frame)
-        inputs = image_processor(images=pil_img, return_tensors="pt")
-        if "cuda" in device_to_use:
-            inputs = {k: v.to(device_to_use) for k, v in inputs.items()}
-            
-        with torch.no_grad():
-            depth_outputs = depth_model(**inputs)
-            predicted_depth = depth_outputs.predicted_depth
-            predicted_depth = torch.nn.functional.interpolate(
-                predicted_depth.unsqueeze(1),
-                size=(height, width),
-                mode="bicubic",
-                align_corners=False,
-            ).squeeze()
-            depth_map = predicted_depth.cpu().numpy()
-
-        depth_min, depth_max = depth_map.min(), depth_map.max()
-        depth_norm = ((depth_map - depth_min) / (depth_max - depth_min) * 255).astype(np.uint8)
+        if depth_norm is None or frame_count % DEPTH_EVERY_N_FRAMES == 0:
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            pil_img = Image.fromarray(rgb_frame)
+            inputs = image_processor(images=pil_img, return_tensors="pt")
+            if "cuda" in device_to_use:
+                inputs = {k: v.to(device_to_use) for k, v in inputs.items()}
+            with torch.inference_mode():
+                depth_outputs = depth_model(**inputs)
+                predicted_depth = torch.nn.functional.interpolate(
+                    depth_outputs.predicted_depth.unsqueeze(1),
+                    size=(height, width),
+                    mode="bilinear",
+                    align_corners=False,
+                ).squeeze()
+                depth_map = predicted_depth.cpu().numpy()
+            depth_min, depth_max = depth_map.min(), depth_map.max()
+            denom = max(float(depth_max - depth_min), 1e-6)
+            depth_norm = ((depth_map - depth_min) / denom * 255).astype(np.uint8)
 
         if plane_coeffs is None:
             plane_coeffs = get_depth_plane(region_pts, depth_norm)
 
-        bev_canvas = np.zeros((bev_h, bev_w, 3), dtype=np.uint8)
-        # Deep dark blue tech background
-        bev_canvas[:] = (10, 15, 20)
-        
-        # High-tech neon green grid
-        grid_color = (20, 45, 30)
-        for i in range(0, max(bev_w, bev_h), 40):
-            cv2.line(bev_canvas, (i, 0), (i, bev_h), grid_color, 1)
-            cv2.line(bev_canvas, (0, i), (bev_w, i), grid_color, 1)
-            
-        center_x, center_y = bev_w // 2, bev_h
-        # Sweeping glowing rings
-        for r in range(100, 2000, 150):
-            cv2.circle(bev_canvas, (center_x, center_y), r, (0, 70, 0), 2)
-            
-        # Active sweeping radar line
-        sweep_speed = 8
-        sweep_y = int(bev_h - ((frame_count * sweep_speed) % bev_h))
-        for i in range(25):
-            alpha = max(0, 255 - (i * 10))
-            cv2.line(bev_canvas, (0, sweep_y + i), (bev_w, sweep_y + i), (0, alpha, int(alpha*0.5)), 1)
-        cv2.line(bev_canvas, (0, sweep_y), (bev_w, sweep_y), (150, 255, 200), 2)
-            
-        overlay_bev = bev_canvas.copy()
-        # Cyan neon polygon
-        cv2.fillPoly(overlay_bev, [np.int32(bev_dst_pts)], (255, 255, 0)) # Cyan in BGR
-        cv2.addWeighted(overlay_bev, 0.15, bev_canvas, 0.85, 0, bev_canvas)
-        cv2.polylines(bev_canvas, [np.int32(bev_dst_pts)], isClosed=True, color=(255, 255, 0), thickness=2)
-        
-        cv2.rectangle(bev_canvas, (20, 20), (550, 90), (10, 15, 20), -1)
-        cv2.rectangle(bev_canvas, (20, 20), (550, 90), (0, 255, 100), 1)
-        cv2.putText(bev_canvas, "ENTERPRISE BEV RADAR (TRUE HOMOGRAPHY)", (35, 45), cv2.FONT_HERSHEY_DUPLEX, 0.65, (0,255,100), 1)
-        cv2.putText(bev_canvas, "Z-Axis Calibration | Dynamic Floor Gradient Active", (35, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0,200,80), 1)
+        bev_canvas = draw_bev_canvas(bev_w, bev_h, bev_dst_pts, frame_count)
 
         active_tracks = 0
         active_in_region = 0
@@ -405,16 +409,13 @@ def process_video(input_path, output_path, tracker_type, rank):
                 bx = max(0, min(bev_w-1, bx))
                 by = max(0, min(bev_h-1, by))
                 
-                cv2.circle(bev_canvas, (bx, by), 16, color, 1)
-                cv2.circle(bev_canvas, (bx, by), 8, color, -1)
-                label_bg = (15, 23, 42)
-                cv2.rectangle(bev_canvas, (bx+15, by-10), (bx+75, by+12), label_bg, -1)
-                cv2.rectangle(bev_canvas, (bx+15, by-10), (bx+75, by+12), color, 1)
-                cv2.putText(bev_canvas, f"ID {track_id}", (bx+20, by+4), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255,255,255), 1)
+                draw_bev_person(bev_canvas, (bx, by), track_id, color, state["classification"])
 
                 label = f"ID {track_id}"
-                if state["classification"]: label += f" | {state['classification']}"
-                elif is_valid_interest: label += f" | {dwell_seconds:.1f}s"
+                if state["classification"]:
+                    label += f" | {state['classification']}"
+                elif is_valid_interest:
+                    label += f" | {dwell_seconds:.1f}s"
                 
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 label_size, baseline = cv2.getTextSize(label, font, 0.48, 1)
@@ -426,18 +427,16 @@ def process_video(input_path, output_path, tracker_type, rank):
         curr_time = time.time()
         inference_fps = 1 / (curr_time - prev_time + 1e-6)
         prev_time = curr_time
-        elapsed_sec = curr_time - start_time
         draw_status_panel(
             annotated_frame, model_name, tracker_type, device_name,
-            inference_fps, elapsed_sec, interested_count, not_interested_count,
-            active_tracks, active_in_region, DWELL_SECONDS_REQUIRED, rank,
-            frame_count, max_frames
+            inference_fps, interested_count, not_interested_count,
+            active_tracks, active_in_region, rank, frame_count, max_frames
         )
 
         annotated_resized = cv2.resize(annotated_frame, (target_w, target_h))
         combined = np.zeros((target_h, target_w + bev_w, 3), dtype=np.uint8)
         combined[:, :target_w] = annotated_resized
-        combined[:bev_h, target_w:] = bev_canvas
+        combined[:, target_w:] = bev_canvas
         out.write(combined)
         
         frame_count += 1
