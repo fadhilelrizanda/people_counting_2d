@@ -32,10 +32,10 @@ DEFAULT_REGION = [
     [755, 1763]
 ]
 MODEL_CANDIDATES = [
-    "yolo11m.pt",
-    "yolov8m.pt",
+    "yolov26x.pt",
+    "yolo26x.pt",
 ]
-DEPTH_MODEL_REPO = "depth-anything/Depth-Anything-V2-Small-hf"
+DEPTH_MODEL_REPO = "depth-anything/Depth-Anything-V2-Large-hf"
 MAX_DURATION_SEC = 5
 DEPTH_EVERY_N_FRAMES = 5
 DWELL_SECONDS_REQUIRED = 3.0
