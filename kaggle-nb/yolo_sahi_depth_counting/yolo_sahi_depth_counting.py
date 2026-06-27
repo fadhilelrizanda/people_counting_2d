@@ -309,8 +309,24 @@ def process_video(input_path, output_path, tracker_type, rank):
             verbose=0
         )
         
-        # Convert to supervision format and filter for 'person' (class 0)
-        detections = sv.Detections.from_sahi(result)
+        # Parse SAHI predictions manually to avoid supervision version issues
+        boxes = []
+        confidences = []
+        class_ids = []
+        for pred in result.object_prediction_list:
+            boxes.append([pred.bbox.minx, pred.bbox.miny, pred.bbox.maxx, pred.bbox.maxy])
+            confidences.append(pred.score.value)
+            class_ids.append(pred.category.id)
+            
+        if len(boxes) > 0:
+            detections = sv.Detections(
+                xyxy=np.array(boxes, dtype=np.float32),
+                confidence=np.array(confidences, dtype=np.float32),
+                class_id=np.array(class_ids, dtype=int)
+            )
+        else:
+            detections = sv.Detections.empty()
+            
         detections = detections[detections.class_id == 0]
         
         # Track with ByteTrack
