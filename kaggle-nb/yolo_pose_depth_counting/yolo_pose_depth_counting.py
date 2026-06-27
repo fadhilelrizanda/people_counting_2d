@@ -488,6 +488,7 @@ if __name__ == "__main__":
     output_dir = "/kaggle/working" if os.path.exists("/kaggle/working") else "."
     
     world_size = torch.cuda.device_count()
+    world_size = min(world_size, len(video_files))
     if world_size > 1:
         print(f"Using DDP with {world_size} GPUs. Sharding {len(video_files)} videos.")
         mp.spawn(main_worker, args=(world_size, video_files, output_dir), nprocs=world_size, join=True)
