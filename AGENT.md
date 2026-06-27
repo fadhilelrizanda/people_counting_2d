@@ -1,147 +1,107 @@
-# 🤖 Kaggle MCP Server Agent Guide
+# Agent Guide
 
-Welcome to the **Kaggle MCP Server** repository. This document is written specifically for AI agents to understand the codebase architecture, multi-user credential profile system, tool mappings, and runtime workflows.
+This repository is a people-counting/video-analytics workspace. The current code has three active areas:
 
----
+- `code/`: local CPU ONNX pipeline for detecting people, tracking centroids, and counting line crossings.
+- `kaggle-nb/`: Kaggle script kernels for GPU video processing and experiment outputs.
+- `kaggle-mcp/`: FastMCP wrapper around the Kaggle CLI for profile, dataset, kernel, and model operations.
 
-## 📖 Table of Contents
-1. [System Architecture](#1-system-architecture)
-2. [Multi-User Profiles](#2-multi-user-profiles)
-3. [Tool Categories & Mappings](#3-tool-categories--mappings)
-4. [Key Agent Workflows & Design Patterns](#4-key-agent-workflows--design-patterns)
-5. [Local Testing & Debugging](#5-local-testing--debugging)
-6. [Dataset Downloader & Visualizer Workflows](#6-dataset-downloader--visualizer-workflows)
-7. [Recommended Datasets (Overhead/Top-View)](#7-recommended-datasets-overheadtop-view)
+Use `rtk` before shell commands in this repo, per `/home/fadhil/.codex/RTK.md`.
 
----
+## Current Pipelines
 
-## 1. System Architecture
+### Local ONNX Counting
 
-This project implements a Model Context Protocol (MCP) server wrapping the `kaggle` CLI (v2.2.1). It is built using Python's `FastMCP` framework.
+Entry point: `code/main.py`
 
-When an LLM client invokes an MCP tool, the server handles it as follows:
-1. Validates the input arguments.
-2. Formats arguments into flags matching the native `kaggle` CLI command.
-3. Injects the active profile's token via environment variables.
-4. Executes the CLI in a subprocess and returns the output stream as plain text.
+The local pipeline:
 
-### Repository Structure & Key Files
-This repository is organized into distinct subdirectories, each containing its own `README.md` file detailing its purpose:
-* **`code/`** ([README.md](file:///home/fadhil/program/people_counting_2d/code/README.md)): Contains the core source code for local CPU execution.
-* **`kaggle-nb/`** ([README.md](file:///home/fadhil/program/people_counting_2d/kaggle-nb/README.md)): Dedicated to pushing Kaggle kernels and managing training notebooks.
-* **`kaggle-mcp/`** ([README.md](file:///home/fadhil/program/people_counting_2d/kaggle-mcp/README.md)): Implements the FastMCP server wrapping the Kaggle CLI.
-* **`helper/`** ([README.md](file:///home/fadhil/program/people_counting_2d/helper/README.md)): Contains utility scripts for development workflows, such as downloading Kaggle kernel outputs.
+1. Loads an ONNX model with `onnxruntime` on CPU.
+2. Opens an input video with OpenCV.
+3. Resizes each frame to the inference size via `script/utils.py`.
+4. Reads detections shaped like `[x1, y1, x2, y2, score, class_id]`.
+5. Keeps class `0` detections above `--conf`.
+6. Tracks detection centroids with `code/tracker.py`.
+7. Counts objects crossing a horizontal line at `--line-ratio`.
+8. Writes an annotated video when `--output` is set.
 
-> [!WARNING]
-> **Missing Files**: Please note that since the root environment was reset, the main `README.md` file and other legacy `.md` files in the root directory were deleted. Additionally, some files previously referenced in documentation (like `kaggle-mcp/CLAUDE.md`, `kaggle-nb/dataset_visualizer/` scripts, or `kaggle-mcp/dummy-kernel/` template files) may be missing and need to be recreated.
-
----
-
-## 2. Multi-User Profiles
-
-The server supports up to **4 Kaggle users** stored as profiles. This allows developers to seamlessly switch credentials during interactive workflows.
-
-> [!NOTE]
-> Profile credentials are persisted in `~/.kaggle/profiles.json` with permissions restricted to the file owner (`0o600`).
-
-### Profile Bootstrapping & Migration
-On the first run, the server automatically reads credentials in the following order and creates a profile named `"default"`:
-1. `KAGGLE_API_TOKEN` environment variable.
-2. `~/.kaggle/access_token` file content.
-3. Fallback to the active user's environment settings.
-
----
-
-## 3. Tool Categories & Mappings
-
-The MCP server exposes various tools mapped directly to the `kaggle` CLI syntax.
-
-### Key Tool Groups
-* **Competitions**: `kaggle_competitions_list`, `kaggle_competitions_download`, `kaggle_competitions_submit`, etc.
-* **Datasets**: `kaggle_datasets_list`, `kaggle_datasets_download`, `kaggle_datasets_create`, etc.
-* **Kernels**: `kaggle_kernels_push`, `kaggle_kernels_logs_tail`, `kaggle_kernels_status`, etc.
-* **Models**: `kaggle_models_list`, `kaggle_models_get`, `kaggle_models_instances_versions_download`, etc.
-
----
-
-## 4. Key Agent Workflows & Design Patterns
-
-### Kernel Logging: Blocking vs. Non-blocking
-When running a remote Kaggle kernel, use **`kaggle_kernels_logs_tail(kernel, lines)`** instead of blocking log commands.
-* It requests logs without follow (`-f`) and returns immediately.
-* **Pattern**: Set up a background timer or poll sequentially (e.g. every 60s) calling `kaggle_kernels_logs_tail` to monitor progress.
-
-### Stopping a Running Kernel
-Because the Kaggle CLI does not have a dedicated `cancel` or `stop` command, if you need to abruptly stop a running kernel from the command line, you must use the delete command:
-* **`kaggle kernels delete <kernel-id>`**
-This will delete the kernel entirely, which effectively kills the current running job.
-
----
-
-## 5. Local Testing & Debugging
-
-To run the MCP server manually or debug it:
+Common command:
 
 ```bash
-# Run server using Python
-python kaggle-mcp/server.py
-
-# Run commands to test profile tools inline via python interactive shell
-python -c "from server import *; print(kaggle_profile_show())"
+rtk python code/main.py --model path/to/best.onnx --video path/to/input.mp4 --output output/annotated_results.mp4
 ```
 
----
+### Kaggle YOLO26 Tracking
 
-## 6. Dataset Downloader & Visualizer Workflows
+Entry point: `kaggle-nb/yolo26_tracking_counting/yolo_tracking_counting.py`
 
-For downloading and visualizing training/testing datasets remotely on Kaggle and pulling them locally, the system uses the following components:
+This script runs Ultralytics YOLO tracking on the Oxford Town Centre dataset. It tries a YOLO26/YOLO11 segmentation model, runs BotSORT and ByteTrack, draws a fixed polygon region, tracks person IDs, and counts polygon entries/exits.
 
-### Directory Layout
-* **`kaggle-nb/dataset_visualizer/`**:
-  * **`download_and_visualize.py`**: Python script that dynamically locates the dataset via `os.walk('/kaggle/input')`, parses the annotations (filtering for `body_valid == 1`), and renders a 1-minute `.mp4` ground-truth video highlighting only the pedestrians' bodies.
-  * **`kernel-metadata.json`**: Configures the Kaggle kernel (P100 GPU enabled) and attaches the pre-requisite dataset `almightyj/oxford-town-centre`.
-* **`code/`**: Scripts like `create_visualizer_notebook.py`, `local_visualize_town_centre.py`, and `download_visualizer_videos.py`.
+### Latest Kaggle Depth + BEV Analytics
 
-### Oxford Town Centre Annotation Mapping
-The ground truth file `TownCentre-groundtruth.top` contains **12 columns**. Standard YOLO loaders must include the two validation flags to prevent a 2-column shift:
-```python
-df = pd.read_csv(annotations_path, header=None, names=[
-    'person_id', 'frame_idx', 'head_valid', 'body_valid',
-    'head_l', 'head_t', 'head_r', 'head_b',
-    'body_l', 'body_t', 'body_r', 'body_b'
-])
+Entry point: `kaggle-nb/yolo_pose_depth_counting/yolo_pose_depth_counting.py`
+
+This is the latest Kaggle pipeline. The working tree may not currently contain this directory, but it is tracked in git and recent outputs are in `output_v13/`, `output_new_bev/`, and related `output_*` folders.
+
+It:
+
+1. Installs/imports `ultralytics` and `transformers` if missing.
+2. Loads YOLO detection/tracking from `yolo11x.pt`, falling back to `yolov8x.pt`.
+3. Loads Depth-Anything V2 Large from Hugging Face: `depth-anything/Depth-Anything-V2-Large-hf`.
+4. Uses BotSORT tracking and person class filtering.
+5. Loads a four-point region polygon from `region_data.json`, with an embedded fallback.
+6. Computes a true homography with `cv2.findHomography` to project camera points into a 720x720 BEV map.
+7. Runs Depth-Anything V2 per frame, normalizes the depth map, and estimates a floor depth plane from the region corners with least squares.
+8. Uses the smoothed bottom-center of each person box as the ground anchor.
+9. Samples a small depth patch under each anchor, smooths anchor/depth with EMA, and rejects tracks whose depth is too far from the floor plane.
+10. Counts dwell time only when the anchor is inside the 2D region and passes the depth check.
+11. Classifies tracks as `interested` after more than 10 seconds of valid dwell, otherwise `not interested` after leaving.
+12. Writes a side-by-side output video: annotated camera view on the left, 2D BEV radar/map on the right.
+
+The script supports multi-GPU Kaggle runs by spawning one worker per CUDA device and sharding videos by rank.
+
+Kernel metadata: `kaggle-nb/yolo_pose_depth_counting/kernel-metadata.json`
+
+Use T4/T4x2 for GPU kernels. If pushing with the Kaggle CLI, include:
+
+```bash
+rtk kaggle kernels push -p kaggle-nb/yolo_pose_depth_counting --accelerator NvidiaTeslaT4
 ```
-* **Note**: Bounding box coordinates can contain `NaN` values when a pedestrian is partially out of frame.
 
----
+### Kaggle Enterprise Interest Analytics
 
-## 7. Primary Dataset & Model
+Entry point: `kaggle-nb/yolov26x_tracking_counting_enterprise/yolov26x_tracking_counting_enterprise.py`
 
-This project relies exclusively on the **Oxford Town Centre** dataset as its primary data source, and utilizes the **YOLO26** model architecture for top-view pedestrian detection and counting.
+Older polygon-only pipeline. It tracks people with ByteTrack, uses each box bottom-center point as the region anchor, classifies dwell over 10 seconds as `interested`, and writes `output_yolov26x_bytetrack_2min.mp4`.
 
-* **Primary Dataset (Oxford Town Centre)**: Provided as a Kaggle dataset `almightyj/oxford-town-centre` for tracking and pedestrian counting.
-* **Primary Model (YOLO26)**: The model is fine-tuned and executed locally via ONNX to achieve optimal performance for overhead detections.
+### Dataset Visualizer
 
-*(Note: Other datasets like SCUT-HEAD or Roboflow Universe datasets are not used in this specific project setup.)*
+Entry point: `kaggle-nb/dataset_visualizer/download_and_visualize.py`
 
----
+This finds Oxford Town Centre files under `/kaggle/input`, reads `TownCentre-groundtruth.top`, filters rows where `body_valid == 1`, skips NaN boxes, and writes a one-minute ground-truth overlay video.
 
-## 8. Depth-Anything V2 & Homography BEV Pipeline
+## Region Selection
 
-A high-performance pipeline was built in `kaggle-nb/yolo_pose_depth_counting` combining YOLO tracking with Depth-Anything-V2:
-* **True Homography Mapping**: Uses `cv2.findHomography` to mathematically warp the camera view into a perfect 2D Bird's Eye View (BEV) radar.
-* **Dynamic Z-Axis Plane**: Uses a least-squares polynomial solver (`np.linalg.lstsq`) to calculate the exact gradient angle of the floor, preventing false positive tracking.
-* **Temporal Smoothing**: Employs double Exponential Moving Average (EMA) filters to stabilize both YOLO bounding boxes and Z-axis depth maps.
-* **Patch-Based Depth Sampling**: Extracts a 5x5 pixel median patch to calculate person depth perfectly without noise spikes.
+Use `code/region/region_selector.py` to click four polygon points on the first frame of a source video. It writes:
 
----
+- `code/region/region_data.json`
+- `code/region/region_preview.jpg`
 
-## 9. Development & Execution Rules
+Copy the JSON into the relevant Kaggle notebook directory when the remote script needs the same region.
 
-To maintain consistency and proper workflow throughout the project, adhere to the following rules:
-1. **Execution Environment**: Kaggle kernels should be executed remotely using the tools provided by the `kaggle-mcp` server, while the code resides in `kaggle-nb`.
-2. **Primary Kaggle Profile**: All operations using the Kaggle API and MCP server must default to the `fadhilelrizandamicr` profile.
-3. **Commit First Workflow**: Any updated or newly developed code must be pushed to the Git repository first before it is executed or tested in the remote Kaggle kernel.
-4. **Hardware Configuration**: All remote Kaggle kernels must be configured to run on the **T4x2 GPU**. Since the Kaggle API and `kernel-metadata.json` default to P100 (which crashes with modern PyTorch due to dropped `sm_60` support), you **must** use the CLI flag `--accelerator NvidiaTeslaT4` when pushing the kernel (e.g. `kaggle kernels push -p folder --accelerator NvidiaTeslaT4`).
-5. **GitHub Operations**: Use the GitHub MCP server for all Git and GitHub interactions (e.g., pushing code, managing branches, or creating pull requests).
-6. **Kaggle Tasks Directory**: If new task code for kaggle running, it should be making new sub dir inside `kaggle-nb`.
+## Kaggle MCP
+
+`kaggle-mcp/server.py` exposes Kaggle CLI actions as MCP tools. It stores profile tokens in `~/.kaggle/profiles.json`, injects the active token as `KAGGLE_API_TOKEN`, and shells out to `kaggle`.
+
+The root project uses Kaggle for remote GPU work, but the actual notebook scripts live in `kaggle-nb/`.
+
+## Working Rules
+
+- Keep changes small and update only the pipeline being touched.
+- Do not modify generated outputs, downloaded models, or videos unless the task explicitly asks for it.
+- For new Kaggle work, create a new subdirectory under `kaggle-nb/`.
+- Prefer existing helpers and plain OpenCV/NumPy code over new dependencies.
+- Remote GPU work should use T4/T4x2, not P100, unless the script explicitly handles CPU fallback.
+- Always use the yolo26x detection model for person tracking and counting tasks.
+- Always use Depth-Anything V2 (Large or highest available version) for depth estimation.
+- Never overwrite the output video; each run should create and save to a new output directory.

@@ -10,7 +10,7 @@
   "enable_tpu": "false",
   "enable_internet": "true",
   "dataset_sources": [
-    "fadhildev/img-0160-first-2min"
+    "fadhildev/vid-2-raw"
   ],
   "competition_sources": [],
   "kernel_sources": [],
